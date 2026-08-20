@@ -1,0 +1,64 @@
+name: XP x64 compatibility report
+description: Report a reproducible defect in the supported OpenJDK 25 / Minecraft 26 Vanilla configuration
+title: "[XP x64] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Release 1.0.0 supports XP Professional x64 SP2, Minecraft 26.1 through 26.2 Vanilla, and the documented single-player behavior of Minecraft 26.3 Snapshot 9. Remove credentials, tokens, usernames, and server addresses from every log.
+  - type: input
+    id: installer
+    attributes:
+      label: Installer filename and SHA-256
+      placeholder: OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r12.exe / SHA-256
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: XP environment
+      description: Service pack, VM or physical machine, CPU, RAM, GPU, and driver
+    validations:
+      required: true
+  - type: input
+    id: launcher
+    attributes:
+      label: Launcher and selected Java executable
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs
+      description: Attach the launcher log and Minecraft logs/latest.log after removing private data.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I reproduced this with a Minecraft version listed in the release test matrix.
+          required: true
+        - label: I tested minecraft-javaw-software.exe or explained why I could not.
+          required: true
+        - label: I removed credentials and personal information from all logs.
+          required: true

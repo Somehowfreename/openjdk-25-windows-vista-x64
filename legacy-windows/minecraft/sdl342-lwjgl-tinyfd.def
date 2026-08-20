@@ -1,0 +1,3 @@
+LIBRARY lwjgl_tinyfd.dll
+EXPORTS
+  Java_org_lwjgl_util_tinyfd_TinyFileDialogs_ntinyfd_1colorChooser

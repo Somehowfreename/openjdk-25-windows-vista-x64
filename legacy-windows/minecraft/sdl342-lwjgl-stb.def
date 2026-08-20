@@ -1,0 +1,3 @@
+LIBRARY lwjgl_stb.dll
+EXPORTS
+  Java_org_lwjgl_stb_LibSTB_setupMalloc

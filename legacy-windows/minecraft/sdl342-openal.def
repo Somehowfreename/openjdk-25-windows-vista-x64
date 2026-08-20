@@ -1,0 +1,3 @@
+LIBRARY OpenAL.dll
+EXPORTS
+  alcOpenDevice

@@ -1,0 +1,3 @@
+LIBRARY lwjgl.dll
+EXPORTS
+  Java_org_lwjgl_system_JNI_callBBBBV__BBBBJ

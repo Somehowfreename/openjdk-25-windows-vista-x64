@@ -1,0 +1,3 @@
+LIBRARY SDL3.dll
+EXPORTS
+  SDL_GetPlatform

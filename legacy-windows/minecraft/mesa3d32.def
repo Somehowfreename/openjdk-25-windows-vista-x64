@@ -1,0 +1,3 @@
+LIBRARY "mesa3d32.dll"
+EXPORTS
+    wglGetProcAddress

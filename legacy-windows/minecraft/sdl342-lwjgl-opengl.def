@@ -1,0 +1,3 @@
+LIBRARY lwjgl_opengl.dll
+EXPORTS
+  Java_org_lwjgl_opengl_AMDDebugOutput_nglDebugMessageCallbackAMD
