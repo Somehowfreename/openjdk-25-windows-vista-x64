@@ -116,6 +116,21 @@ Technical documentation:
 - [Support policy](SUPPORT.md)
 - [Security policy](SECURITY.md)
 
+## Building from source
+
+The complete corresponding OpenJDK and XP compatibility source is included in
+this repository. Start with
+[LEGACY_WINDOWS_BUILD.md](LEGACY_WINDOWS_BUILD.md), which records the upstream
+baseline, compiler and SDK requirements, XP export reference, compatibility
+image construction, Minecraft native-wrapper builds, final runtime assembly,
+NSIS installer reproduction, and certificate-helper build. The normal OpenJDK
+build system is documented in [doc/building.md](doc/building.md).
+
+Release reproduction intentionally uses explicit input and toolchain paths and
+refuses to overwrite preserved build outputs. A reproduced binary is expected
+to be built from a clean checkout so its installer can embed the exact source
+commit and a complete per-file payload manifest.
+
 ## Licensing and attribution
 
 This repository is derived from the official
