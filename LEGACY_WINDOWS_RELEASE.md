@@ -4,7 +4,7 @@
 
 | Target | File | SHA-256 |
 | --- | --- | --- |
-| Windows XP Professional x64 Edition SP2 | `OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r12.exe` | Recorded by the final release build |
+| Windows XP Professional x64 Edition SP2 | `OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r12.exe` | `9D01DABD21C9D9206AECB3ADA791336C2888DD2BDBADC70F1574FEAF62B1036C` |
 
 Optional manual certificate-store importer:
 
@@ -27,7 +27,8 @@ It is an internal package revision, not a beta designation.
 
 - Upstream repository: `https://github.com/openjdk/jdk25u-dev.git`
 - Upstream baseline: `jdk-25.0.4.1+0` / `jdk-25.0.4+7`
-- Binary payload source commit: recorded by the final r12 installer build
+- Binary payload source commit:
+  `9c0ce88311465284f57bffa9b585e2077504342b`
 - Release documentation/preparation commit: recorded by the final release tag
 - Public release tag: `v1.0.0`
 
