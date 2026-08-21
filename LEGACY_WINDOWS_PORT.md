@@ -27,6 +27,11 @@ The compatibility layer neither installs a global shim nor patches the
 operating system. See [legacy-windows/README.md](legacy-windows/README.md) for
 the implementation and packaging model.
 
+The Minecraft wrapper sets process-local `ALSOFT_CONF` to its bundled XP audio
+configuration before the JVM starts. OpenAL therefore uses XP's native
+DirectSound implementation with the tested output format and buffer while
+other Java programs and system audio remain untouched.
+
 ## Installation and launcher selection
 
 1. Download the installer whose filename names the exact target OS.
@@ -52,7 +57,7 @@ multiplayer was not tested.
 
 The release build verifies Java/Javac and wrapper startup, preserves the
 machine environment, records the source commit and payload marker, and verifies
-all 658 payload hashes. Uninstall behavior is unchanged from the previously
+all 661 payload hashes. Uninstall behavior is unchanged from the previously
 qualified installer definition.
 
 See [LEGACY_WINDOWS_TEST_MATRIX.md](LEGACY_WINDOWS_TEST_MATRIX.md) for the exact

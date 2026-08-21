@@ -9,7 +9,7 @@
 Build the normal x64 Windows JDK image using the upstream instructions in
 `doc/building.md`. The port source is then processed into a release image by the
 scripts under `legacy-windows/jdkxp`; that post-link step is part of the port.
-The source and exact r12 wrapper/installer drivers are all contained in this
+The source and exact r14 wrapper/installer drivers are all contained in this
 repository.
 
 ## Compatibility image prerequisites
@@ -48,7 +48,7 @@ the port, sets the NT 5.2 PE target, and emits `SHA256SUMS.txt`.
 Optional Minecraft native directories can be supplied through
 `-AdditionalTargetRoot` when building the proxy. This expands the process-local
 forwarder surface; it does not modify Minecraft or Windows. The wrapper and
-assembly sources used for release build r12 are under `legacy-windows/minecraft`.
+assembly sources used for release build r14 are under `legacy-windows/minecraft`.
 
 Build the two release-specific native compatibility payloads before the wrapper:
 
@@ -60,11 +60,11 @@ Build the two release-specific native compatibility payloads before the wrapper:
   -OutputRevision r1
 
 .\legacy-windows\minecraft\build-minecraft-wrappers.ps1 `
-  -JavaMajor 25 -OutputRevision r12 `
+  -JavaMajor 25 -OutputRevision r14 `
   -LwjglCompatRevision r3 -SdlCompatRevision r1
 
 .\legacy-windows\minecraft\assemble-minecraft-wrapper-images.ps1 `
-  -JavaMajor 25 -Revision r12 -SupportRevision r12 -TargetOs xp
+  -JavaMajor 25 -Revision r14 -SupportRevision r14 -TargetOs xp
 ```
 
 The LWJGL build preserves the certified legacy export surface and adds only the
@@ -75,12 +75,12 @@ colliding with the JDK's own modules.
 ## Building installers
 
 Use NSIS 3.12 or newer and the release driver under
-`legacy-windows/installer/minecraft-r12`. The release selects only the XP x64
+`legacy-windows/installer/minecraft-r14`. The release selects only the XP x64
 OpenJDK 25 image. Definitions for development targets are not support claims.
 
 ```powershell
-.\legacy-windows\installer\minecraft-r12\build-installer.ps1 `
-  -RuntimeDirectory C:\release\openjdk-25.0.4-xp-x64-minecraft-wrapper-r12 `
+.\legacy-windows\installer\minecraft-r14\build-installer.ps1 `
+  -RuntimeDirectory C:\release\openjdk-25.0.4-xp-x64-minecraft-wrapper-r14 `
   -Makensis C:\tools\nsis\makensis.exe `
   -OutputDirectory C:\release\installer
 ```
@@ -88,7 +88,7 @@ OpenJDK 25 image. Definitions for development targets are not support claims.
 The driver embeds the exact source commit and payload SHA-256 manifest, treats
 NSIS warnings as errors, and emits installer `SHA256SUMS.txt`. For a different
 build farm, change only the explicit input/toolchain paths; do not change the
-payload, source commit, or target-OS checks when reproducing release build r12.
+payload, source commit, or target-OS checks when reproducing release build r14.
 
 The optional serialized-certificate-store importer can be built separately:
 

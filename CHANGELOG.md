@@ -14,6 +14,8 @@ First supported release for Windows XP Professional x64 Edition SP2.
   components;
 - performs XP-compatible native routing automatically without modifying
   MultiMC libraries or Minecraft JARs;
+- applies a process-local, bare-metal-tested XP DirectSound configuration that
+  prevents OpenAL crackling without changing Windows or MultiMC settings;
 - validates Java/Javac startup, world lifecycles, saving, normal shutdown,
   audio, Microsoft account sign-in, and main-release online multiplayer;
 - includes source, build notes, per-file payload verification, release hashes,

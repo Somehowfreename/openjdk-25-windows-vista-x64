@@ -12,9 +12,9 @@ qualified separately for its tested single-player behavior.
 
 ## Installer certification
 
-| Installer | Package build | Java/Javac | Embedded metadata | Global environment | 658 payload hashes | Uninstall safety definition |
+| Installer | Package build | Java/Javac | Embedded metadata | Global environment | 661 payload hashes | Uninstall safety definition |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| XP x64 build r12 | Pass | Pass | Pass | No `PATH` or `JAVA_HOME` changes | Pass (658/658) | Pass (registered path and marker guarded) |
+| XP x64 build r14 | Pass | Pass | Pass | No `PATH` or `JAVA_HOME` changes | Pass (661/661) | Pass (registered path and marker guarded) |
 
 “Embedded metadata” includes the product identity, target operating system,
 payload marker, source commit, and per-file payload manifest. The installer
@@ -37,7 +37,9 @@ For release qualification, the Vanilla lifecycle covers:
 2. reload the saved world, render, navigate, save, and exit normally.
 
 The application-local graphics paths, Java Sound DirectSound path, and OpenAL
-sound engine completed successfully. Normal Microsoft device-code sign-in and
+sound engine completed successfully. Bare-metal validation additionally
+confirmed clean OpenAL music and game audio through the process-local XP
+DirectSound configuration. Normal Microsoft device-code sign-in and
 authenticated multiplayer passed for every listed main release. Snapshot 9
 multiplayer has not been tested.
 

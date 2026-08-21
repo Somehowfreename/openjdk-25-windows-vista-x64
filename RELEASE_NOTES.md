@@ -20,9 +20,13 @@ No JVM compatibility flags, Minecraft JAR edits, read-only library files, or
 manual native replacements are required. See the repository README and
 `MINECRAFT_RELEASE.md` before installing.
 
+The Minecraft Java wrapper automatically uses XP's native DirectSound backend
+with the validated OpenAL output format and buffering. No per-user OpenAL file
+or MultiMC audio workaround is required.
+
 ## Release assets
 
-- `OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r12.exe`: complete JDK and
+- `OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r14.exe`: complete JDK and
   automatic Minecraft 26 compatibility installer.
 - `import-sst-xp-x64.exe`: optional helper for importing a user-generated
   Microsoft root-certificate SST when Legacy Update is not used.

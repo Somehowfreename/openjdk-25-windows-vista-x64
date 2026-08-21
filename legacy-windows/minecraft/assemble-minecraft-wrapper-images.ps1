@@ -123,11 +123,13 @@ foreach ($image in $images) {
             -ImportMappings @{ 'KERNEL32.dll' = 'JDKXP.dll' }
     }
 
-    foreach ($requiredRelative in @(
+    $requiredRelatives = @(
         'bin\java.exe',
         'bin\javaw.exe',
         'bin\minecraft-java.exe',
         'bin\minecraft-javaw.exe',
+        'bin\minecraft-java-runtime.exe',
+        'bin\minecraft-javaw-runtime.exe',
         'bin\minecraft-java-software.exe',
         'bin\minecraft-javaw-software.exe',
         'minecraft-software\minecraft-java-software.exe',
@@ -146,7 +148,13 @@ foreach ($image in $images) {
         'minecraft-software\SDL3.dll',
         'minecraft-software\SDLS.dll',
         'minecraft-software\SDLU.dll'
-    )) {
+    )
+    if ($image.JavaMajor -eq 25) {
+        $requiredRelatives += @(
+            'minecraft\26.2\compat\alsoft-xp.ini'
+        )
+    }
+    foreach ($requiredRelative in $requiredRelatives) {
         $required = Join-Path $output $requiredRelative
         if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
             throw "Assembled image $($image.Id) is incomplete: $required"

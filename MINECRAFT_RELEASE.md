@@ -119,6 +119,13 @@ make LWJGL use the application-local XP-compatible OpenAL, GLFW, FreeType,
 OpenGL support, and other native modules installed with this JDK. This applies
 to every Minecraft 26 instance that uses one of the four Minecraft launchers.
 
+The launcher also points OpenAL Soft at the bundled `alsoft-xp.ini` before the
+JVM starts. That file selects XP's native DirectSound backend, stereo 16-bit
+48 kHz output, and the bare-metal-tested 1024-frame/four-period buffer. The
+setting is process-local: it does not change Windows audio settings, other
+programs, MultiMC, or the user's global OpenAL configuration. An advanced user
+can set `ALSOFT_CONF` before launching to supply a different OpenAL Soft config.
+
 Do not patch JARs, make library files read-only, replace files under MultiMC's
 `libraries` directory, or add `java.library.path`/`org.lwjgl.librarypath`
 arguments. Those changes can defeat MultiMC's integrity checks or bypass the
@@ -141,6 +148,9 @@ Use these steps if an instance does not start automatically:
    and `SDLU.dll`. Do not obtain individual DLLs from third-party download
    sites. If any are absent, verify the release installer checksum and run that
    installer again as an administrator to repair the complete payload.
+   Also confirm this audio configuration exists:
+
+   `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\minecraft\26.2\compat\alsoft-xp.ini`
 4. Create a new unmodified Vanilla instance of the same game version and point
    it to `minecraft-javaw.exe`. This separates a damaged instance from a Java
    installation problem without changing existing worlds.
@@ -177,6 +187,17 @@ download cache as a repair step.
 `minecraft-javaw-software.exe` intentionally renders on the CPU. Install the
 correct XP x64 GPU driver and try `minecraft-javaw.exe`. Real-hardware speed is
 determined primarily by that driver and GPU.
+
+### Audio crackles or contains static
+
+- Confirm the instance uses this project's `minecraft-javaw.exe`, then fully
+  close and restart Minecraft.
+- Confirm `minecraft\26.2\compat\alsoft-xp.ini` exists under the installed JDK.
+- Remove any custom `ALSOFT_CONF` or `ALSOFT_DRIVERS` environment override.
+- Run the release installer again as an administrator to repair the complete
+  wrapper payload; do not copy an unrelated `OpenAL.dll` into MultiMC.
+- If the problem remains, include the audio device and driver version in the
+  issue report along with sanitized MultiMC and Minecraft logs.
 
 ### Reporting an issue
 

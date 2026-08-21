@@ -6,10 +6,14 @@
 #include <wchar.h>
 
 /*
- * Keep the software renderer in a sibling directory with the original DLL
- * names (glfw.dll and opengl32.dll). This tiny launcher remains in bin so a
- * user or third-party Minecraft launcher has an obvious, stable executable
- * to select without copying DLLs or adding JVM properties by hand.
+ * Start the real Minecraft Java launcher as a child process. This lets the
+ * stable public entry point prepare process-local compatibility state before
+ * Windows loads OpenAL and the rest of the native runtime in the child.
+ *
+ * The software renderer remains in a sibling directory with the original DLL
+ * names (glfw.dll and opengl32.dll). The hardware runtime remains in bin under
+ * a private name. Users and third-party launchers select only the stable public
+ * minecraft-java[w][-software].exe entry points.
  */
 
 static const wchar_t *skip_program_name(const wchar_t *command_line) {
@@ -36,7 +40,7 @@ static int show_failure(int graphical, const wchar_t *operation, DWORD error) {
                (unsigned long)error);
     message[(sizeof(message) / sizeof(message[0])) - 1] = L'\0';
     if (graphical) {
-        MessageBoxW(NULL, message, L"Legacy OpenJDK Minecraft software launcher",
+        MessageBoxW(NULL, message, L"Legacy OpenJDK Minecraft launcher",
                     MB_OK | MB_ICONERROR);
     } else {
         fwprintf(stderr, L"%s\n", message);
@@ -86,10 +90,11 @@ static int prepend_process_path(const wchar_t *directory) {
     return result;
 }
 
-static int run_software_launcher(int graphical) {
+static int run_minecraft_launcher(int graphical) {
     wchar_t module_path[32768];
     wchar_t bin_path[32768];
     wchar_t target_path[32768];
+    wchar_t openal_config_path[32768];
     wchar_t *slash;
     wchar_t *command_line;
     const wchar_t *arguments;
@@ -123,7 +128,30 @@ static int run_software_launcher(int graphical) {
                             GetLastError());
     }
 
-#ifdef MINECRAFT_DISPATCH_WINDOWS
+    _snwprintf(openal_config_path,
+               sizeof(openal_config_path) / sizeof(openal_config_path[0]) - 1,
+               L"%s\\minecraft\\26.2\\compat\\alsoft-xp.ini", module_path);
+    openal_config_path[(sizeof(openal_config_path) /
+                        sizeof(openal_config_path[0])) - 1] = L'\0';
+    if (GetFileAttributesW(openal_config_path) == INVALID_FILE_ATTRIBUTES) {
+        return show_failure(graphical, L"Locating the XP OpenAL configuration",
+                            GetLastError());
+    }
+    SetLastError(ERROR_SUCCESS);
+    if (GetEnvironmentVariableW(L"ALSOFT_CONF", NULL, 0) == 0 &&
+        GetLastError() == ERROR_ENVVAR_NOT_FOUND &&
+        !SetEnvironmentVariableW(L"ALSOFT_CONF", openal_config_path)) {
+        return show_failure(graphical, L"Preparing the XP OpenAL configuration",
+                            GetLastError());
+    }
+
+#if defined(MINECRAFT_DISPATCH_HARDWARE) && defined(MINECRAFT_DISPATCH_WINDOWS)
+    _snwprintf(target_path, sizeof(target_path) / sizeof(target_path[0]) - 1,
+               L"%s\\bin\\minecraft-javaw-runtime.exe", module_path);
+#elif defined(MINECRAFT_DISPATCH_HARDWARE)
+    _snwprintf(target_path, sizeof(target_path) / sizeof(target_path[0]) - 1,
+               L"%s\\bin\\minecraft-java-runtime.exe", module_path);
+#elif defined(MINECRAFT_DISPATCH_WINDOWS)
     _snwprintf(target_path, sizeof(target_path) / sizeof(target_path[0]) - 1,
                L"%s\\minecraft-software\\minecraft-javaw-software.exe", module_path);
 #else
@@ -153,7 +181,7 @@ static int run_software_launcher(int graphical) {
                         &startup, &process)) {
         DWORD error = GetLastError();
         HeapFree(GetProcessHeap(), 0, command_line);
-        return show_failure(graphical, L"Starting the software-rendered Java runtime", error);
+        return show_failure(graphical, L"Starting the Minecraft Java runtime", error);
     }
     HeapFree(GetProcessHeap(), 0, command_line);
     CloseHandle(process.hThread);
@@ -177,10 +205,10 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, wchar_t *command_lin
     (void)previous;
     (void)command_line;
     (void)show;
-    return run_software_launcher(1);
+    return run_minecraft_launcher(1);
 }
 #else
 int wmain(void) {
-    return run_software_launcher(0);
+    return run_minecraft_launcher(0);
 }
 #endif

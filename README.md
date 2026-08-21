@@ -23,6 +23,11 @@ and normal exit; multiplayer for that snapshot has not been tested. The exact
 matrix is in
 [LEGACY_WINDOWS_TEST_MATRIX.md](LEGACY_WINDOWS_TEST_MATRIX.md).
 
+The Minecraft launcher automatically selects XP's native DirectSound backend
+with the bare-metal-tested OpenAL output format and buffering. This prevents
+the crackling produced by OpenAL Soft's default XP configuration on affected
+hardware. Users do not need to create an `alsoft.ini` file or change MultiMC.
+
 Fabric, NeoForge, Forge, individual mods, Windows Vista, 32-bit Windows, and
 Minecraft versions not listed in the test matrix are not supported by this
 release.
@@ -97,8 +102,9 @@ picker or entering its complete path in the same box:
 
 Do not replace files inside MultiMC's `libraries` directory or Minecraft JARs.
 The included launchers route the compatible LWJGL, OpenAL, GLFW, FreeType, and
-SDL components automatically for supported Minecraft 26 instances. Recovery
-and manual verification steps are in
+SDL components automatically for supported Minecraft 26 instances. They also
+apply the verified XP DirectSound configuration only inside the Minecraft Java
+process. Recovery and manual verification steps are in
 [MINECRAFT_RELEASE.md](MINECRAFT_RELEASE.md#manual-repair-and-verification).
 
 ## Privacy and game ownership

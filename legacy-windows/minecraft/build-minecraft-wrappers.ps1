@@ -25,6 +25,7 @@ $patcher = Join-Path $workspace 'work\compat\jdkxp\patch-image.ps1'
 $preloadLibraries = Join-Path $workspace 'work\compat\minecraftxp\preload'
 $source = Join-Path $PSScriptRoot 'minecraft_wrapper_options.cpp'
 $dispatcherSource = Join-Path $PSScriptRoot 'minecraft_software_dispatcher.c'
+$openAlXpConfig = Join-Path $PSScriptRoot 'alsoft-xp.ini'
 $lwjglCompatPayload = Join-Path $workspace "work\release-builds\lwjgl-memoryutil-compat-$LwjglCompatRevision\payload"
 $sdlCompatPayload = Join-Path $workspace "work\release-builds\sdl3-isolated-compat-$SdlCompatRevision\payload"
 
@@ -113,6 +114,7 @@ foreach ($major in $JavaMajor) {
         (Join-Path $preloadLibraries 'mesa3d32.lib')
     )
     if ($definition.FullPreload) {
+        $requiredInputs += $openAlXpConfig
         $requiredInputs += @('lwjgl.lib', 'lwjgl_opengl.lib', 'lwjgl_stb.lib', 'lwjgl_tinyfd.lib') |
             ForEach-Object { Join-Path $preloadLibraries $_ }
         $requiredInputs += @('lwjgl.dll', 'lwjgl341.dll') |
@@ -168,8 +170,8 @@ foreach ($major in $JavaMajor) {
     }
 
     $launchers = @(
-        [pscustomobject]@{ Directory=$payloadBin; Name='minecraft-java.exe'; Kind='console'; Imports=$preloadImports; Options=$optionsObject },
-        [pscustomobject]@{ Directory=$payloadBin; Name='minecraft-javaw.exe'; Kind='windows'; Imports=$preloadImports; Options=$optionsObject },
+        [pscustomobject]@{ Directory=$payloadBin; Name='minecraft-java-runtime.exe'; Kind='console'; Imports=$preloadImports; Options=$optionsObject },
+        [pscustomobject]@{ Directory=$payloadBin; Name='minecraft-javaw-runtime.exe'; Kind='windows'; Imports=$preloadImports; Options=$optionsObject },
         [pscustomobject]@{ Directory=$payloadSoftware; Name='minecraft-java-software.exe'; Kind='console'; Imports=$preloadImports; Options=$softwareOptionsObject },
         [pscustomobject]@{ Directory=$payloadSoftware; Name='minecraft-javaw-software.exe'; Kind='windows'; Imports=$preloadImports; Options=$softwareOptionsObject }
     )
@@ -184,10 +186,12 @@ foreach ($major in $JavaMajor) {
         if ($LASTEXITCODE -ne 0) { throw "Linking Java $major $($launcher.Name) failed." }
     }
 
-    # Preserve the familiar bin\minecraft-java[w]-software.exe entry points
-    # while keeping Mesa and the original GLFW/OpenGL module names isolated in
-    # the sibling minecraft-software directory.
+    # Stable public dispatchers set the XP OpenAL configuration before Windows
+    # loads the real Java/OpenAL process. Hardware runtimes stay in bin under
+    # private names; software runtimes stay isolated in minecraft-software.
     foreach ($dispatcher in @(
+        [pscustomobject]@{ Name='minecraft-java.exe'; Kind='console'; Defines=@('/DMINECRAFT_DISPATCH_HARDWARE') },
+        [pscustomobject]@{ Name='minecraft-javaw.exe'; Kind='windows'; Defines=@('/DMINECRAFT_DISPATCH_HARDWARE', '/DMINECRAFT_DISPATCH_WINDOWS') },
         [pscustomobject]@{ Name='minecraft-java-software.exe'; Kind='console'; Defines=@() },
         [pscustomobject]@{ Name='minecraft-javaw-software.exe'; Kind='windows'; Defines=@('/DMINECRAFT_DISPATCH_WINDOWS') }
     )) {
@@ -250,6 +254,10 @@ foreach ($major in $JavaMajor) {
         $compatSource = Join-Path $workspace 'work\minecraft\compat\26.2\jtracy\jtracy-1.0.37-natives-windows-xp.jar'
         $compatTarget = Join-Path $payload 'minecraft\26.2\compat'
         [IO.Directory]::CreateDirectory($compatTarget) | Out-Null
+        # The wrappers set process-local ALSOFT_CONF to this verified XP
+        # DirectSound configuration before Minecraft opens the audio device.
+        Copy-Item -LiteralPath $openAlXpConfig `
+            -Destination (Join-Path $compatTarget 'alsoft-xp.ini')
         Copy-Item -LiteralPath $compatSource -Destination $compatTarget
         Copy-Item -LiteralPath (Join-Path $workspace 'work\minecraft\official\versions\26.2\natives-windows-x64\Tracy_LICENSE') `
             -Destination $compatTarget
