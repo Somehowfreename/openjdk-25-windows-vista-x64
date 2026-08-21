@@ -103,9 +103,10 @@ store:
    certutil -generateSSTFromWU WURoots.sst
    ```
 
-3. Copy your newly generated `WURoots.sst` and the release asset
-   `import-sst-xp-x64.exe` to the same local folder on XP. Verify the importer's
-   published SHA-256 first. Its complete source is in
+3. Download and completely extract `XP-x64-Certificates-Installer.zip`. Replace
+   its supplied `WURoots.sst` with your newly generated file. Keep it beside
+   the enclosed `import-sst-xp-x64.exe` and verify both against the ZIP's
+   `SHA256SUMS.txt`. The importer's complete source is in
    `legacy-windows/tools/xp-cert-import` for independent review and builds.
 4. Log on to XP as a local administrator, open Command Prompt in that folder,
    and run:

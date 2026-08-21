@@ -51,15 +51,63 @@ Minecraft versions. Bare-metal validation began with a fresh installation from
 unmodified official Windows XP Professional x64 Edition SP2 media, with no
 post-SP2 updates installed through Legacy Update or any other update service.
 After the correct hardware drivers and current trusted-root certificates were
-installed, the tested configurations worked.
+installed, the tested configurations worked. The final clean-room check
+restored an image captured immediately after the XP installation—before any
+drivers or launcher had been installed—then used only newly installed hardware
+drivers and files downloaded from this GitHub release. Minecraft launched with
+clean audio and required no residual test files or manual compatibility fixes.
 
 Installing all applicable Microsoft-issued updates through the current
 [Legacy Update](https://legacyupdate.net/) release is still recommended for
 general operating-system security, but users do not need to wait for that
-process before testing this project. Users who do not trust the supplied
-certificate package can generate `WURoots.sst` directly from Microsoft's
-Windows Update trust service and import it manually; see the
-[manual Microsoft-root procedure](MINECRAFT_RELEASE.md#manual-certificate-route).
+process before testing this project.
+
+### Manual certificate installation
+
+Users do not have to trust the `WURoots.sst` supplied in the certificate ZIP
+or run its automated BAT file. To download a fresh trusted-root store directly
+from Microsoft and import it manually:
+
+1. On a currently supported, Internet-connected Windows computer, open Command
+   Prompt as administrator and run:
+
+   ```cmd
+   mkdir C:\XP-x64-roots
+   cd /d C:\XP-x64-roots
+   certutil -generateSSTFromWU WURoots.sst
+   certutil -hashfile WURoots.sst SHA256
+   ```
+
+   Microsoft documents `-generateSSTFromWU` in its
+   [certutil reference](https://learn.microsoft.com/windows-server/administration/windows-commands/certutil).
+2. Download and completely extract `XP-x64-Certificates-Installer.zip`. Replace
+   its supplied `WURoots.sst` with the file generated in step 1. Keep that file
+   beside `import-sst-xp-x64.exe`.
+3. Review the importer's complete source under
+   `legacy-windows/tools/xp-cert-import`, or build it yourself using the
+   included instructions. Verify the extracted files against the ZIP's
+   `SHA256SUMS.txt`.
+4. Copy the extracted folder to a local drive on XP, log on as an administrator,
+   open Command Prompt in that folder, and run:
+
+   ```cmd
+   import-sst-xp-x64.exe WURoots.sst ROOT
+   ```
+
+5. Confirm the importer reports success, then restart XP.
+
+For a route that uses no executable from this project, open the
+Microsoft-generated `WURoots.sst` on the supported Windows computer, inspect
+and export the required roots as individual DER-encoded `.cer` files, then
+transfer them to XP. On XP, run `mmc`, add the **Certificates** snap-in for the
+**Computer account** and **Local computer**, open **Trusted Root Certification
+Authorities > Certificates**, and use **Action > All Tasks > Import** for each
+reviewed certificate. Microsoft documents the certificate store and MMC route
+in its
+[Trusted Root Certification Authorities guide](https://learn.microsoft.com/windows-hardware/drivers/install/trusted-root-certification-authorities-certificate-store).
+
+Adding a root changes certificate trust for the whole computer. Never install
+root bundles obtained from unofficial mirrors.
 
 ## Install OpenJDK 25
 

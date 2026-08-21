@@ -29,6 +29,9 @@ unmodified official XP Professional x64 Edition SP2 media and no post-SP2
 updates. Correct hardware drivers and current trusted-root certificates are
 still required. Legacy Update is optional for this project, although installing
 applicable Microsoft-issued updates remains recommended for OS security.
+The final clean-room run restored a pre-driver XP image and used only newly
+installed hardware drivers plus files downloaded from this release; Minecraft
+launched with clean audio and no prior launcher or compatibility state.
 
 ## Release assets
 
@@ -37,8 +40,6 @@ applicable Microsoft-issued updates remains recommended for OS security.
 - `XP-x64-Certificates-Installer.zip`: optional one-step trusted-root package
   for fresh XP x64 SP2 systems. Its README also documents generating a fresh
   root store directly from Microsoft and importing it manually.
-- `import-sst-xp-x64.exe`: optional helper for importing a user-generated
-  Microsoft root-certificate SST when Legacy Update is not used.
 - `jdk25-xp-x64-PAYLOAD-SHA256SUMS.txt`: per-file hashes for all 661 installed
   JDK payload files.
 - `SHA256SUMS.txt`: release-asset checksums.

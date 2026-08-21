@@ -12,7 +12,8 @@ Optional trusted-root package for a fresh XP x64 SP2 installation:
 | --- | --- |
 | `XP-x64-Certificates-Installer.zip` | `5F1E62D683A4FE38B53949751678C7AA16549891D19138F805166241EF962AA2` |
 
-Optional manual certificate-store importer:
+The certificate ZIP contains this independently verifiable importer; it is not
+a separate release download:
 
 | File | SHA-256 |
 | --- | --- |

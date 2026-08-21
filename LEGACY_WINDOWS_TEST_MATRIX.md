@@ -43,6 +43,12 @@ DirectSound configuration. Normal Microsoft device-code sign-in and
 authenticated multiplayer passed for every listed main release. Snapshot 9
 multiplayer has not been tested.
 
+The final release-download check restored a disk image captured immediately
+after the XP installation and before drivers or any launcher were installed.
+After installing the hardware drivers, only assets downloaded from the GitHub
+release were used. Minecraft launched successfully with clean audio and no
+prior Java, MultiMC, wrapper, or OpenAL configuration present.
+
 Physical GPU-driver behavior remains hardware-dependent. This matrix does not
 certify mod loaders, individual mods, Vista, 32-bit Windows, or Minecraft
 versions not listed above.
