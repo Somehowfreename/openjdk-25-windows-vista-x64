@@ -32,9 +32,11 @@ system DLLs or modify global `PATH` or `JAVA_HOME`.
 
 1. Confirm the computer runs XP Professional x64 Edition SP2, has the correct
    date and time, and has current chipset, network, audio, and graphics drivers.
-2. Install the current [Legacy Update](https://legacyupdate.net/) release, use
-   it to install all applicable XP x64 updates, restart, and scan again. Repeat
-   until no applicable updates remain.
+2. Download `XP-x64-Certificates-Installer.zip` from this project's GitHub
+   release, extract the complete `XP-x64-Certificates-Installer` folder, and
+   double-click `Install Certificates.bat` as an administrator. Keep the BAT,
+   `import-sst-xp-x64.exe`, and `WURoots.sst` together. Wait for **SUCCESS** and
+   restart XP. Legacy Update is optional and is not required for this release.
 3. Verify the JDK installer SHA-256 against
    [LEGACY_WINDOWS_RELEASE.md](LEGACY_WINDOWS_RELEASE.md), then run it as an
    administrator.
@@ -75,17 +77,22 @@ MultiMC must establish modern HTTPS connections to Microsoft, Xbox, Mojang,
 and Minecraft services. The computer's clock and trusted-root store must be
 current.
 
-The recommended route is the latest Legacy Update release. Its installer
-refreshes the root-certificate store and restores the update path on XP x64.
-Use Legacy Update 1.13.2 or newer, verify its checksum on the
-[official release-history page](https://legacyupdate.net/releases), install all
-applicable updates, restart, and rescan until none remain before configuring
-MultiMC. Legacy Update is a community-maintained delivery mechanism; the
-Windows updates it installs are Microsoft-issued updates.
+The fastest route is the separate `XP-x64-Certificates-Installer.zip` release
+asset. Extract it completely, keep its BAT, EXE, and SST files together, run
+`Install Certificates.bat` as an administrator, and restart XP. The package
+README explains exactly what is imported and how to generate a replacement
+`WURoots.sst` directly from Microsoft.
+
+Legacy Update is optional. Installing all applicable Microsoft-issued updates
+through its current release is recommended for broader operating-system
+security, but it is not a prerequisite for this OpenJDK/Minecraft release.
+Bare-metal validation passed on a fresh official XP x64 SP2 installation with
+no post-SP2 updates after the correct drivers and trusted roots were installed.
 
 ### Manual certificate route
 
-Use this only if you intentionally do not want Legacy Update:
+Use this if you do not want Legacy Update or do not trust the supplied root
+store:
 
 1. On a currently supported Windows computer, open Command Prompt as an
    administrator.
@@ -96,8 +103,10 @@ Use this only if you intentionally do not want Legacy Update:
    certutil -generateSSTFromWU WURoots.sst
    ```
 
-3. Copy `WURoots.sst` and the release asset `import-sst-xp-x64.exe` to a local
-   folder on XP. Verify the importer's published SHA-256 first.
+3. Copy your newly generated `WURoots.sst` and the release asset
+   `import-sst-xp-x64.exe` to the same local folder on XP. Verify the importer's
+   published SHA-256 first. Its complete source is in
+   `legacy-windows/tools/xp-cert-import` for independent review and builds.
 4. Log on to XP as a local administrator, open Command Prompt in that folder,
    and run:
 

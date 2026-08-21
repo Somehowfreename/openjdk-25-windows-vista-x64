@@ -4,7 +4,13 @@
 
 | Target | File | SHA-256 |
 | --- | --- | --- |
-| Windows XP Professional x64 Edition SP2 | `OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r12.exe` | `9D01DABD21C9D9206AECB3ADA791336C2888DD2BDBADC70F1574FEAF62B1036C` |
+| Windows XP Professional x64 Edition SP2 | `OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r14.exe` | `EEEB734A072BC9278129786D60D11D6CC913C3D7145D3ED7361B8B5ED4267337` |
+
+Optional trusted-root package for a fresh XP x64 SP2 installation:
+
+| File | SHA-256 |
+| --- | --- |
+| `XP-x64-Certificates-Installer.zip` | `5F1E62D683A4FE38B53949751678C7AA16549891D19138F805166241EF962AA2` |
 
 Optional manual certificate-store importer:
 
@@ -16,11 +22,13 @@ Payload manifest:
 
 | File | SHA-256 |
 | --- | --- |
-| `jdk25-xp-x64-PAYLOAD-SHA256SUMS.txt` | `EA7F6DDB0686A1A11C293DC363BCC9FD59F641E7C28CB76A086E3A03B377A070` |
+| `jdk25-xp-x64-PAYLOAD-SHA256SUMS.txt` | `37AC768DBA1AEF39BABE7E8933764995BCE752C7363ADA9E64D1BAD88B5A0C9C` |
 
-`r12` is the release build that adds the LWJGL 3.4.2 MemoryUtil compatibility
-surface and isolated SDL3 routing required by Minecraft 26.3 Snapshot 9 while
-preserving the automatic native routing used by the main 26.1–26.2 releases.
+`r14` preserves the automatic native routing used by Minecraft 26.1 through
+26.2 and the LWJGL 3.4.2/isolated SDL3 compatibility required by Minecraft 26.3
+Snapshot 9. It adds a two-stage launcher that sets the bundled XP DirectSound
+configuration before the real JVM/OpenAL process loads, eliminating the
+bare-metal OpenAL crackling observed with its default XP output configuration.
 It is an internal package revision, not a beta designation.
 
 ## Provenance
@@ -28,12 +36,12 @@ It is an internal package revision, not a beta designation.
 - Upstream repository: `https://github.com/openjdk/jdk25u-dev.git`
 - Upstream baseline: `jdk-25.0.4.1+0` / `jdk-25.0.4+7`
 - Binary payload source commit:
-  `9c0ce88311465284f57bffa9b585e2077504342b`
+  `cbf0aa68aafb4cdc0d96a18d35f7785ba3341f42`
 - Release documentation/preparation commit: recorded by the final release tag
 - Public release tag: `v1.0.0`
 
 The final `v1.0.0` tag may add checksums and release metadata without changing
-the qualified r12 installer payload.
+the qualified r14 installer payload.
 
 ## Important notes
 
@@ -41,6 +49,9 @@ the qualified r12 installer payload.
 - The installer is unsigned; verify SHA-256 before execution.
 - No Windows system DLL is installed or replaced.
 - Global `PATH` and `JAVA_HOME` are not changed.
+- The bare-metal test used unmodified official XP x64 SP2 media with no
+  post-SP2 updates. Correct drivers and current trusted roots were installed;
+  Legacy Update was not required for the qualified application behavior.
 - Select installed `bin\minecraft-javaw.exe` for real hardware. Use
   `bin\minecraft-javaw-software.exe` only as the slower CPU-rendered fallback.
 - The installer contains no Minecraft game files, Mojang assets, account

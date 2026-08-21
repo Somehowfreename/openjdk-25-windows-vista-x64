@@ -38,16 +38,28 @@ release.
    network, audio, and 64-bit graphics drivers for the computer.
 2. Set the correct date, time, and time zone. TLS sign-in can fail when the
    clock is wrong.
-3. Install the current release of
-   [Legacy Update](https://legacyupdate.net/) and all applicable Windows XP x64
-   updates. Restart and scan again until no applicable updates remain. Legacy
-   Update also refreshes root certificates needed by current HTTPS services.
-   Use version 1.13.2 or newer and verify its hash on the
-   [official release-history page](https://legacyupdate.net/releases).
+3. Download `XP-x64-Certificates-Installer.zip` from this project's
+   [GitHub Releases page](https://github.com/Somehowfreename/openjdk-25-windows-xp-x64/releases/latest).
+   Extract it completely, open the enclosed `XP-x64-Certificates-Installer`
+   folder, and double-click `Install Certificates.bat` while logged on as an
+   administrator. Keep the BAT, `import-sst-xp-x64.exe`, and `WURoots.sst`
+   together. Wait for **SUCCESS**, then restart XP.
 4. Back up important files before using an unsupported operating system online.
 
-If Legacy Update is not desired, the manual Microsoft-root procedure is in
-[MINECRAFT_RELEASE.md](MINECRAFT_RELEASE.md#manual-certificate-route).
+Legacy Update is **not required** to run this OpenJDK or the supported
+Minecraft versions. Bare-metal validation began with a fresh installation from
+unmodified official Windows XP Professional x64 Edition SP2 media, with no
+post-SP2 updates installed through Legacy Update or any other update service.
+After the correct hardware drivers and current trusted-root certificates were
+installed, the tested configurations worked.
+
+Installing all applicable Microsoft-issued updates through the current
+[Legacy Update](https://legacyupdate.net/) release is still recommended for
+general operating-system security, but users do not need to wait for that
+process before testing this project. Users who do not trust the supplied
+certificate package can generate `WURoots.sst` directly from Microsoft's
+Windows Update trust service and import it manually; see the
+[manual Microsoft-root procedure](MINECRAFT_RELEASE.md#manual-certificate-route).
 
 ## Install OpenJDK 25
 

@@ -24,15 +24,28 @@ The Minecraft Java wrapper automatically uses XP's native DirectSound backend
 with the validated OpenAL output format and buffering. No per-user OpenAL file
 or MultiMC audio workaround is required.
 
+Bare-metal validation also passed from a fresh installation made with
+unmodified official XP Professional x64 Edition SP2 media and no post-SP2
+updates. Correct hardware drivers and current trusted-root certificates are
+still required. Legacy Update is optional for this project, although installing
+applicable Microsoft-issued updates remains recommended for OS security.
+
 ## Release assets
 
 - `OpenJDK25U-jdk_x64_windows-xp_25.0.4_minecraft-r14.exe`: complete JDK and
   automatic Minecraft 26 compatibility installer.
+- `XP-x64-Certificates-Installer.zip`: optional one-step trusted-root package
+  for fresh XP x64 SP2 systems. Its README also documents generating a fresh
+  root store directly from Microsoft and importing it manually.
 - `import-sst-xp-x64.exe`: optional helper for importing a user-generated
   Microsoft root-certificate SST when Legacy Update is not used.
+- `jdk25-xp-x64-PAYLOAD-SHA256SUMS.txt`: per-file hashes for all 661 installed
+  JDK payload files.
 - `SHA256SUMS.txt`: release-asset checksums.
 
-The installer is unsigned. Verify SHA-256 before running it. No Minecraft game
-files, account credentials, launcher tokens, or certificate bundle are
-included. This is an independent community port and not an official OpenJDK,
-Adoptium, Microsoft, Mojang, Minecraft, or MultiMC release.
+The executables are unsigned. Verify SHA-256 before running them. No Minecraft
+game files, account credentials, or launcher tokens are included. The optional
+certificate ZIP contains a Microsoft Windows Update root-store snapshot and
+clearly documents how to replace it with a newly generated Microsoft copy.
+This is an independent community port and not an official OpenJDK, Adoptium,
+Microsoft, Mojang, Minecraft, or MultiMC release.

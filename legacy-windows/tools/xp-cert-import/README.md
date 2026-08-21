@@ -23,6 +23,10 @@ import-sst-xp-x64.exe WURoots.sst ROOT
 ```
 
 Adding trust anchors changes system-wide certificate trust. Review the source
-and the SST contents first. The recommended beginner route is to use the
-current Legacy Update release, which refreshes the XP root store as part of its
-setup.
+and the SST contents first. The optional `XP-x64-Certificates-Installer.zip`
+release asset is the beginner route: extract it completely, keep its BAT, EXE,
+and SST files together, run `Install Certificates.bat` as an administrator,
+and restart XP. Its enclosed README also documents direct Microsoft retrieval,
+direct import without the BAT, and a Microsoft MMC-only route. Legacy Update is
+optional for this project, although applicable OS updates remain recommended
+for security.

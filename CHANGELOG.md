@@ -16,6 +16,8 @@ First supported release for Windows XP Professional x64 Edition SP2.
   MultiMC libraries or Minecraft JARs;
 - applies a process-local, bare-metal-tested XP DirectSound configuration that
   prevents OpenAL crackling without changing Windows or MultiMC settings;
+- provides an optional one-step trusted-root package for fresh XP x64 SP2
+  installations, with direct-Microsoft and manual-import alternatives;
 - validates Java/Javac startup, world lifecycles, saving, normal shutdown,
   audio, Microsoft account sign-in, and main-release online multiplayer;
 - includes source, build notes, per-file payload verification, release hashes,
