@@ -63,14 +63,24 @@ The installer does not replace Windows DLLs and does not alter global `PATH` or
 2. Extract the entire archive to a normal local folder such as
    `C:\Games\MultiMC`. Do not run it from inside the ZIP or from any shared or
    network folder.
-3. Run `MultiMC.exe`.
+3. Run `MultiMC.exe`. During MultiMC's first-launch setup, its Java file picker
+   may hide executables whose names are not the standard `java.exe` or
+   `javaw.exe`. If `minecraft-javaw.exe` is not shown there, type or paste this
+   complete path directly into the Java-path field:
+
+   `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw.exe`
+
+   Manual path entry is required only for that first-launch picker. After the
+   main launcher opens, **Settings > Java > Browse** displays
+   `minecraft-javaw.exe` and it can be selected normally.
 4. Click the face/profile button in the upper-right, choose **Manage Accounts**,
    then **Add Microsoft**. Follow MultiMC's device-code instructions. The web
    page may be opened on a modern PC or phone.
 5. Click **Add Instance**, select the desired supported Minecraft 26 Vanilla
    release, and create the instance.
-6. Right-click the instance, choose **Edit Instance**, open **Settings**, enable
-   the Java-installation override, and browse to:
+6. Right-click the instance, choose **Edit Instance**, open **Settings**, and
+   enable the Java-installation override. Select `minecraft-javaw.exe` using
+   the normal Java picker, or confirm that the Java path is exactly:
 
    `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw.exe`
 
@@ -80,7 +90,8 @@ The installer does not replace Windows DLLs and does not alter global `PATH` or
 
 The native-GPU launcher above is the recommended path for real hardware. If the
 installed XP graphics driver cannot provide the required OpenGL behavior, use
-this slower CPU-rendered fallback instead:
+this slower CPU-rendered fallback instead by selecting it in the normal Java
+picker or entering its complete path in the same box:
 
 `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw-software.exe`
 

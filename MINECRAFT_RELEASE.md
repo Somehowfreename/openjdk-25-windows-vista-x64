@@ -40,14 +40,23 @@ system DLLs or modify global `PATH` or `JAVA_HOME`.
    administrator.
 4. Download the official Windows archive from
    [multimc.org](https://multimc.org/#Download), extract it to a local folder,
-   and run `MultiMC.exe`.
+   and run `MultiMC.exe`. During first-launch setup, its Java file picker may
+   hide nonstandard executable names. If `minecraft-javaw.exe` is not listed,
+   type or paste this complete path directly into the Java-path field:
+
+   `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw.exe`
+
+   This manual-entry workaround applies only to the first-launch picker. After
+   the launcher opens, **Settings > Java > Browse** displays
+   `minecraft-javaw.exe` and it can be selected normally.
 5. Click the face/profile button in the upper-right, choose **Manage Accounts**,
    then **Add Microsoft**. Follow the device-code instructions. It is fine to
    open the displayed web address on another trusted computer or phone.
 6. Click **Add Instance**, select a supported Minecraft 26 Vanilla version, and
    create the instance.
-7. Right-click the instance, choose **Edit Instance**, open **Settings**, enable
-   the Java override, and select:
+7. Right-click the instance, choose **Edit Instance**, open **Settings**, and
+   enable the Java override. Select `minecraft-javaw.exe` using the normal Java
+   picker, or confirm that the path is exactly:
 
    `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw.exe`
 
@@ -119,8 +128,8 @@ automatic routing.
 
 Use these steps if an instance does not start automatically:
 
-1. In the instance's **Edit Instance > Settings** page, confirm the Java path
-   is exactly:
+1. In the instance's **Edit Instance > Settings** page, select the executable
+   using the normal Java picker or confirm the path is exactly:
 
    `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw.exe`
 
