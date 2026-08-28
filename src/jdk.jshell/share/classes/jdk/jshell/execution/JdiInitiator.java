@@ -45,6 +45,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
+import jdk.internal.util.JdkExecutablePath;
 
 /**
  * Sets up a JDI connection, providing the resulting JDI {@link VirtualMachine}
@@ -207,12 +208,15 @@ public class JdiInitiator {
             List<String> args = new ArrayList<>();
             args.add(javaHome == null
                     ? "java"
-                    : javaHome + File.separator + "bin" + File.separator + "java");
+                    : JdkExecutablePath.resolve(javaHome, "java"));
             args.add("-agentlib:jdwp=transport=" + connector.transport().name() +
                     ",address=" + jdiAddress);
             args.addAll(remoteVMOptions);
             args.add(remoteAgent);
             args.add("" + jshellControlPort);
+            if (Boolean.getBoolean("legacy.windows.traceChildLaunch")) {
+                System.err.println("Legacy Windows JShell child arguments: " + args);
+            }
             ProcessBuilder pb = new ProcessBuilder(args);
             pb.redirectError(crashErrorFile);
             pb.redirectOutput(crashOutputFile);

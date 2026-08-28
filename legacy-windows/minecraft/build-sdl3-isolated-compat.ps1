@@ -3,11 +3,12 @@ param(
     [ValidatePattern('^r[0-9]+$')]
     [string] $OutputRevision = 'r1',
 
-    [string] $CertifiedSdlRoot
+    [string] $CertifiedSdlRoot,
+    [string] $WorkspaceRoot
 )
 
 $ErrorActionPreference = 'Stop'
-$workspace = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..\..\..')).Path
+$workspace = if ($WorkspaceRoot) { (Resolve-Path -LiteralPath $WorkspaceRoot).Path } else { (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..\..\..')).Path }
 $reader = Join-Path $workspace 'work\toolchains\llvm-mingw-20260616-msvcrt-x86_64\bin\llvm-readobj.exe'
 $patcher = Join-Path $workspace 'work\compat\jdkxp\patch-image.ps1'
 if (-not $CertifiedSdlRoot) {

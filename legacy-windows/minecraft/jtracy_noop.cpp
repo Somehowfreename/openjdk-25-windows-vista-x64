@@ -56,4 +56,13 @@ JNIEXPORT jint JNICALL Java_com_mojang_jtracy_TracyBindings_endGpuZone(
 JNIEXPORT jint JNICALL Java_com_mojang_jtracy_TracyBindings_submitQueryTimestamp(
     JNIEnv*, jclass, jint, jint, jlong) { return 0; }
 
+// Added by jtracy 1.14.x (Minecraft 26.3). Keep the no-op transport ABI
+// complete so a future code path cannot fail with UnsatisfiedLinkError.
+JNIEXPORT void JNICALL Java_com_mojang_jtracy_TracyBindings_sectionSetup(
+    JNIEnv*, jclass, jint, jstring) {}
+JNIEXPORT jint JNICALL Java_com_mojang_jtracy_TracyBindings_sectionEnter(
+    JNIEnv*, jclass, jint, jstring) { return 0; }
+JNIEXPORT void JNICALL Java_com_mojang_jtracy_TracyBindings_sectionLeave(
+    JNIEnv*, jclass, jint) {}
+
 }  // extern "C"

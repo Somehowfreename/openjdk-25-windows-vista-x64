@@ -289,6 +289,8 @@ void os::run_periodic_checks(outputStream* st) {
 static LONG WINAPI Uncaught_Exception_Handler(struct _EXCEPTION_POINTERS* exceptionInfo);
 
 #define JVM_LIB_NAME "jvm.dll"
+#define LEGACY_PRIVATE_EXECUTABLE_DIRECTORY \
+  "\\lib\\legacy-windows\\internal\\launcher\\executables"
 
 void os::init_system_properties_values() {
   // sysclasspath, java_home, dll_dir
@@ -310,27 +312,39 @@ void os::init_system_properties_values() {
       // but can also be like this for a statically linked binary:
       //   <jdk_path>/bin/<executable>.exe
       bool is_jvm_dll = false;
+      bool is_legacy_private_layout = false;
       pslash = strrchr(home_dir, '\\');
       if (pslash != nullptr) {
         if (strncmp(pslash + 1, JVM_LIB_NAME, strlen(JVM_LIB_NAME)) == 0) {
           // Binary name is jvm.dll. Get rid of \jvm.dll.
           *pslash = '\0';
           is_jvm_dll = true;
+
+          const size_t home_len = strlen(home_dir);
+          const size_t private_len = strlen(LEGACY_PRIVATE_EXECUTABLE_DIRECTORY);
+          if (home_len >= private_len &&
+              _stricmp(home_dir + home_len - private_len,
+                       LEGACY_PRIVATE_EXECUTABLE_DIRECTORY) == 0) {
+            home_dir[home_len - private_len] = '\0';
+            is_legacy_private_layout = true;
+          }
         }
 
-        // Get rid of \hotspot_variant>, if binary is jvm.dll,
-        // or cut off \<executable>, if it is a statically linked binary.
-        pslash = strrchr(home_dir, '\\');
-        if (pslash != nullptr) {
-          // XP launchers preload a second copy at <jdk_path>\bin\jvm.dll.
-          // In that layout there is no hotspot-variant component to remove.
-          if (!is_jvm_dll || _stricmp(pslash + 1, "bin") != 0) {
-            *pslash = '\0';
-          }
-          // Get rid of \bin
+        if (!is_legacy_private_layout) {
+          // Get rid of \hotspot_variant>, if binary is jvm.dll,
+          // or cut off \<executable>, if it is a statically linked binary.
           pslash = strrchr(home_dir, '\\');
           if (pslash != nullptr) {
-            *pslash = '\0';
+            // XP launchers preload a second copy at <jdk_path>\bin\jvm.dll.
+            // In that layout there is no hotspot-variant component to remove.
+            if (!is_jvm_dll || _stricmp(pslash + 1, "bin") != 0) {
+              *pslash = '\0';
+            }
+            // Get rid of \bin
+            pslash = strrchr(home_dir, '\\');
+            if (pslash != nullptr) {
+              *pslash = '\0';
+            }
           }
         }
       }

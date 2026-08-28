@@ -31,6 +31,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Random;
 
+import jdk.internal.util.JdkExecutablePath;
+
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
@@ -205,7 +207,7 @@ public class SunCommandLineLauncher extends AbstractLauncher {
 
         try {
             if (home.length() > 0) {
-                exePath = home + File.separator + "bin" + File.separator + exe;
+                exePath = JdkExecutablePath.resolve(home, exe);
             } else {
                 exePath = exe;
             }
@@ -228,7 +230,9 @@ public class SunCommandLineLauncher extends AbstractLauncher {
                              "-Xrunjdwp:" + xrun + ' ' +
                              mainClassAndArgs;
 
-            // System.err.println("Command: \"" + command + '"');
+            if (Boolean.getBoolean("legacy.windows.traceChildLaunch")) {
+                System.err.println("Legacy Windows child command: \"" + command + '"');
+            }
             vm = launch(tokenizeCommand(command, quote.charAt(0)), address, listenKey,
                         transportService());
         } finally {

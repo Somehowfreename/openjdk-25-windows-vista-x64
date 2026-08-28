@@ -60,6 +60,9 @@ ShowUninstDetails show
 !ifndef PAYLOAD_KIND
   !error "PAYLOAD_KIND is required"
 !endif
+!ifndef UPGRADE_AUDITOR
+  !error "UPGRADE_AUDITOR is required"
+!endif
 !ifndef ESTIMATED_SIZE_KB
   !define ESTIMATED_SIZE_KB 0
 !endif
@@ -184,9 +187,79 @@ Function ValidateInstallDirectory
     Abort
 FunctionEnd
 
+Function AuditExistingInstallation
+  IfFileExists "$INSTDIR\*.*" 0 no_existing_installation
+  IfFileExists "$INSTDIR\.legacy-openjdk-install" 0 unknown_nonempty_directory
+  IfFileExists "$INSTDIR\PAYLOAD-SHA256SUMS.txt" 0 damaged_existing_installation
+
+  InitPluginsDir
+  SetOutPath "$PLUGINSDIR"
+  File "/oname=legacy-openjdk-upgrade-audit.exe" "${UPGRADE_AUDITOR}"
+  Delete "$TEMP\LegacyOpenJDK-upgrade-audit.txt"
+  ExecWait '"$PLUGINSDIR\legacy-openjdk-upgrade-audit.exe" "$INSTDIR\PAYLOAD-SHA256SUMS.txt" "$INSTDIR" "$TEMP\LegacyOpenJDK-upgrade-audit.txt"' $0
+  StrCmp $0 0 pristine_installation
+  StrCmp $0 10 changed_installation audit_failed
+
+  changed_installation:
+    FileOpen $1 "$TEMP\LegacyOpenJDK-upgrade-audit.txt" r
+    IfErrors audit_failed
+    FileRead $1 $2
+    FileRead $1 $3
+    FileRead $1 $4
+    FileRead $1 $5
+    FileRead $1 $6
+    FileRead $1 $7
+    FileRead $1 $8
+    FileClose $1
+    MessageBox MB_ICONEXCLAMATION|MB_YESNO|MB_DEFBUTTON2 \
+      "The existing OpenJDK directory contains modified, missing, or additional files:$\r$\n$\r$\n$2$3$4$5$6$7$8$\r$\nThe complete list is saved to:$\r$\n$TEMP\LegacyOpenJDK-upgrade-audit.txt$\r$\n$\r$\nMove or back up anything you want to keep before continuing. Continuing will delete the complete existing OpenJDK directory and replace it with this version.$\r$\n$\r$\nProceed to the final warning?" \
+      IDYES final_destructive_confirmation IDNO user_cancelled
+
+  final_destructive_confirmation:
+    MessageBox MB_ICONSTOP|MB_YESNO|MB_DEFBUTTON2 \
+      "FINAL WARNING$\r$\n$\r$\nTHE EXISTING OPENJDK DIRECTORY AND EVERY FILE INSIDE IT WILL BE PERMANENTLY DELETED.$\r$\n$\r$\nCONFIRM THAT YOU HAVE MOVED OR BACKED UP EVERY MODIFIED OR ADDITIONAL FILE YOU WANT TO KEEP.$\r$\n$\r$\nDELETE THE EXISTING DIRECTORY AND INSTALL THIS VERSION?" \
+      IDYES remove_existing_installation IDNO user_cancelled
+
+  pristine_installation:
+    Goto remove_existing_installation
+
+  remove_existing_installation:
+    RMDir /r "$INSTDIR"
+    IfFileExists "$INSTDIR\*.*" removal_failed 0
+    IfFileExists "$INSTDIR" removal_failed no_existing_installation
+
+  unknown_nonempty_directory:
+    MessageBox MB_ICONSTOP|MB_OK \
+      "The selected directory is not empty and is not a recognized Legacy OpenJDK installation. Nothing was deleted. Choose an empty directory or move its contents first."
+    Abort
+
+  damaged_existing_installation:
+    MessageBox MB_ICONSTOP|MB_OK \
+      "The existing Legacy OpenJDK installation has no payload manifest, so its contents cannot be audited safely. Nothing was deleted. Move or back up the directory manually, then run this installer again."
+    Abort
+
+  audit_failed:
+    MessageBox MB_ICONSTOP|MB_OK \
+      "The existing Legacy OpenJDK installation could not be audited safely. Nothing was deleted. Check file permissions and close programs using this JDK, then run the installer again."
+    Abort
+
+  removal_failed:
+    MessageBox MB_ICONSTOP|MB_OK \
+      "The existing OpenJDK directory could not be removed completely. Nothing new was installed. Close every program using this JDK, then run the installer again."
+    Abort
+
+  user_cancelled:
+    MessageBox MB_ICONINFORMATION|MB_OK \
+      "Upgrade cancelled. The existing OpenJDK directory was not changed."
+    Abort
+
+  no_existing_installation:
+FunctionEnd
+
 Section "OpenJDK" SecOpenJDK
   SectionIn RO
   Call ValidateInstallDirectory
+  Call AuditExistingInstallation
   SetRegView 64
   SetShellVarContext all
   SetOverwrite on
@@ -212,17 +285,10 @@ Section "OpenJDK" SecOpenJDK
     FileWrite $0 "No PATH or JAVA_HOME value is changed. Select $INSTDIR\bin\javaw.exe in your launcher.$\r$\n"
   !else
     FileWrite $0 "No PATH or JAVA_HOME value is changed.$\r$\n"
-!ifdef MODERN_MINECRAFT_LAYOUT
-    FileWrite $0 "MultiMC: select $INSTDIR\bin\minecraft-javaw-multimc.exe.$\r$\n"
-    FileWrite $0 "OLauncher: select $INSTDIR\bin\minecraft-javaw-olauncher.exe.$\r$\n"
-    FileWrite $0 "The same named launcher handles Minecraft 1.21.x and 26.x automatically. minecraft-javaw.exe remains a byte-identical MultiMC compatibility name.$\r$\n"
-    FileWrite $0 "Executables under bin\vmtests are software-rendering validation tools for VMs, not normal user launchers.$\r$\n"
-!else
-    FileWrite $0 "MultiMC: select $INSTDIR\bin\minecraft-javaw-multimc.exe. The original minecraft-javaw.exe remains an identical compatibility entry point.$\r$\n"
-    FileWrite $0 "OLauncher: select $INSTDIR\bin\minecraft-javaw-olauncher.exe. Use minecraft-javaw-software-olauncher.exe only when the hardware driver cannot supply the required OpenGL version.$\r$\n"
-    FileWrite $0 "minecraft-javaw.exe uses the native GPU driver. Use minecraft-javaw-software.exe only when the hardware driver cannot supply the required OpenGL version.$\r$\n"
-!endif
-    FileWrite $0 "The wrappers detect Minecraft 1.21.x or 26.x and configure the bundled compatibility natives automatically; do not replace launcher libraries or add legacy JVM arguments manually.$\r$\n"
+    FileWrite $0 "For MultiMC, select $INSTDIR\bin\minecraft-javaw-multimc.exe.$\r$\n"
+    FileWrite $0 "For OLauncher, select $INSTDIR\bin\minecraft-javaw-olauncher.exe.$\r$\n"
+    FileWrite $0 "The public wrappers use the native GPU driver. Diagnostic software-rendering wrappers are under $INSTDIR\bin\vmtests and are not intended for normal use.$\r$\n"
+    FileWrite $0 "The wrapper configures the bundled compatibility natives automatically; do not replace launcher libraries or add legacy JVM arguments manually.$\r$\n"
   !endif
   FileClose $0
 
@@ -239,7 +305,7 @@ Section "OpenJDK" SecOpenJDK
   WriteRegStr HKLM "${UNINSTALL_REG_KEY}" "DisplayVersion" "${DISPLAY_VERSION}"
   WriteRegStr HKLM "${UNINSTALL_REG_KEY}" "Publisher" "${COMPANY_NAME}"
   WriteRegStr HKLM "${UNINSTALL_REG_KEY}" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKLM "${UNINSTALL_REG_KEY}" "DisplayIcon" "$INSTDIR\bin\java.exe"
+  WriteRegStr HKLM "${UNINSTALL_REG_KEY}" "DisplayIcon" "$INSTDIR\bin\minecraft-java.exe"
   WriteRegStr HKLM "${UNINSTALL_REG_KEY}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
   WriteRegStr HKLM "${UNINSTALL_REG_KEY}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
   WriteRegDWORD HKLM "${UNINSTALL_REG_KEY}" "NoModify" 1

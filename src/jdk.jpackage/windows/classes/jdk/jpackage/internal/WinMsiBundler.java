@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import jdk.internal.util.JdkExecutablePath;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -215,7 +216,8 @@ public class WinMsiBundler  extends AbstractBundler {
             // Assume java.exe exists in Java Runtime being packed.
             // Ignore custom icon if any as we don't want to copy anything in
             // Java Runtime image.
-            installerIcon = runtimeLayout.runtimeDirectory().resolve(Path.of("bin", "java.exe"));
+            installerIcon = JdkExecutablePath.resolve(
+                    runtimeLayout.runtimeDirectory(), "java.exe");
         } else if (appImageLayout instanceof ApplicationLayout appLayout) {
             installerIcon = appLayout.launchersDirectory().resolve(
                     pkg.app().mainLauncher().orElseThrow().executableNameWithSuffix());

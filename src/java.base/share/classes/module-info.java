@@ -278,6 +278,8 @@ module java.base {
         jdk.internal.vm.ci,
         jdk.httpserver,
         jdk.jlink,
+        jdk.jdi,
+        jdk.jshell,
         jdk.jpackage,
         jdk.net;
     exports sun.net to

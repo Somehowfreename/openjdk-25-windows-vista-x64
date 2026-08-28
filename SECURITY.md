@@ -1,26 +1,16 @@
-# Security policy
+# Security
 
-## Windows XP warning
+Windows XP and Windows Vista no longer receive ordinary Microsoft security
+support. A current Java runtime and root certificates do not make the entire
+operating system secure. Use network isolation and an appropriate security
+policy for legacy machines.
 
-Windows XP is no longer supported by Microsoft. This project makes a specific
-OpenJDK/Minecraft configuration run; it does not make Windows XP safe for
-general Internet exposure. Use network isolation, backups, and an appropriate
-security posture for an obsolete operating system.
+Use only trusted installers and official launcher downloads. Check release
+hashes. Installing a root certificate changes system-wide trust; the README
+describes obtaining roots directly from Microsoft without using this project's
+automated importer.
 
-## Reporting a port vulnerability
-
-For vulnerabilities introduced by the XP compatibility layer, launcher,
-packaging scripts, or installer, use GitHub's private vulnerability-reporting
-feature when it is enabled for this repository. Do not publish exploit details
-in a normal issue before maintainers have had time to assess them.
-
-Ordinary compatibility defects that have no security impact may be filed as
-GitHub issues using the bug-report template.
-
-## Upstream OpenJDK vulnerabilities
-
-For vulnerabilities in OpenJDK itself, follow the
-[OpenJDK Vulnerability Policy](https://openjdk.org/groups/vulnerability/report).
-
-The installer is currently unsigned. Always verify the SHA-256 published on the
-GitHub Release before running it.
+Never publish launcher account files, Microsoft refresh/access tokens,
+passwords, private keys or full authenticated launch commands in an issue.
+For a suspected security vulnerability, use GitHub's private vulnerability
+reporting feature when available, rather than posting secrets publicly.

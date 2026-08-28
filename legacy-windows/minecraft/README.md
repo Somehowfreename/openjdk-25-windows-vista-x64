@@ -1,42 +1,25 @@
 # Minecraft 26 wrapper source
 
-This directory contains the source and exact build-r14 drivers for the
-application-local Minecraft launchers bundled with the XP x64 installer.
+The launcher-specific dispatchers select compatible native dependencies before
+starting the private Java runtime. Their paths are resolved relative to the
+installation, not a fixed launcher folder.
 
-## Entry points
+- `minecraft-javaw-multimc.exe`: MultiMC entry point.
+- `minecraft-javaw.exe`: a byte-identical copy for existing MultiMC settings.
+- `minecraft-javaw-olauncher.exe`: OLauncher entry point.
+- `minecraft-java.exe`: console diagnostics.
+- `bin/vmtests`: explicitly named software-rendering variants.
 
-- `minecraft-javaw.exe`: normal GUI launcher using the XP machine's native
-  graphics driver;
-- `minecraft-java.exe`: console equivalent for diagnostics;
-- `minecraft-javaw-software.exe`: GUI launcher using the bundled software
-  OpenGL renderer;
-- `minecraft-java-software.exe`: console equivalent.
+`minecraft_software_dispatcher.c` selects the runtime and process-local audio
+settings. `minecraft_wrapper_options.cpp` supplies the native-library routes.
+`jtracy_noop.cpp` provides the optional Tracy JNI surface, and
+`lwjgl_memoryutil_compat.c` supplies the additional MemoryUtil entry points.
+SDL's compatibility modules have private names to avoid collisions with the
+JDK's modules. Windows system files and launcher downloads are not replaced.
 
-`minecraft_wrapper_options.cpp` supplies only the compatibility options needed
-by the supported Minecraft 26 builds and resolves all support paths relative to
-the installed JDK. `minecraft_software_dispatcher.c` is the outer dispatcher:
-it sets process-local `ALSOFT_CONF` to `alsoft-xp.ini` before starting the real
-JVM executable, selecting the bare-metal-tested native DirectSound format and
-buffer without modifying a user or system OpenAL setting. It also keeps the
-software renderer isolated from the normal launcher so its `opengl32.dll`
-cannot shadow XP's system OpenGL module.
-`jtracy_noop.cpp` provides the narrow optional Tracy JNI surface used by the
-game without introducing post-XP runtime dependencies.
-`lwjgl_memoryutil_compat.c` adds the two LWJGL 3.4.2 MemoryUtil queries while
-the generated forwarding DLL preserves every certified legacy LWJGL export.
-`build-sdl3-isolated-compat.ps1` gives SDL3's broader compatibility modules
-private names so they cannot collide with modules already loaded by the JDK.
+See [build instructions](../../LEGACY_WINDOWS_BUILD.md) and the
+[release scope](../../LEGACY_WINDOWS_TEST_MATRIX.md). Internal profile code is
+not a support claim for configurations outside that matrix.
 
-The PowerShell drivers are the exact drivers used to construct and assemble
-the r14 payload. They intentionally refuse to overwrite preserved build output.
-They expect the development-workspace inputs documented in
-`../../LEGACY_WINDOWS_BUILD.md`; paths can be adapted for another build farm.
-
-Minecraft, LWJGL, OpenAL Soft, GLFW, Mesa, and their assets are not relicensed
-as part of this source tree. The installer contains only the compatibility
-runtime components and their applicable notices; it does not contain Minecraft
-game files or account credentials.
-
-The original code in this directory is distributed under the same GPLv2 with
-Classpath Exception terms as the surrounding OpenJDK repository. See
-`../../LICENSE`, `../../ADDITIONAL_LICENSE_INFO`, and `../../ASSEMBLY_EXCEPTION`.
+This project's original code follows the surrounding OpenJDK GPLv2 with
+Classpath Exception licensing. Third-party components retain their licenses.

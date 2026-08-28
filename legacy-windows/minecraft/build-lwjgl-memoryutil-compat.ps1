@@ -5,11 +5,12 @@ param(
 
     [string] $LegacyLwjgl,
 
-    [string] $LegacyDefinition
+    [string] $LegacyDefinition,
+    [string] $WorkspaceRoot
 )
 
 $ErrorActionPreference = 'Stop'
-$workspace = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..\..\..')).Path
+$workspace = if ($WorkspaceRoot) { (Resolve-Path -LiteralPath $WorkspaceRoot).Path } else { (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..\..\..\..')).Path }
 $msvc = Join-Path $workspace 'work\toolchains\msvc-14.29-portable\Contents\VC\Tools\MSVC\14.29.30133'
 $sdk = Join-Path $workspace 'work\toolchains\winsdk-10.0.19041-portable\Windows Kits\10'
 $sdkVersion = '10.0.19041.0'

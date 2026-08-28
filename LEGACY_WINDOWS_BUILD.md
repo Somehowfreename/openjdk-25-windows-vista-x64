@@ -1,32 +1,35 @@
-# Building the XP x64 Minecraft 26 Vanilla release
+# Building OpenJDK 25 and the Minecraft 26 package
 
-## Source baseline
+This repository contains the modified OpenJDK source, application-local Windows
+compatibility code, Minecraft wrappers, and installer sources. Build on a
+modern x64 Windows host, not on XP or Vista. Read OpenJDK's
+[Windows build instructions](doc/building.md) first.
 
-- Upstream repository: `https://github.com/openjdk/jdk25u-dev.git`
-- Upstream release tag: `jdk-25.0.4.1+0` / `jdk-25.0.4+7`
-- Port branch: `xp-x64-backport`
+## Tools and source
 
-Build the normal x64 Windows JDK image using the upstream instructions in
-`doc/building.md`. The port source is then processed into a release image by the
-scripts under `legacy-windows/jdkxp`; that post-link step is part of the port.
-The source and exact r14 wrapper/installer drivers are all contained in this
-repository.
+- Use this release tag's complete source tree; checking out unmodified upstream
+  OpenJDK alone omits the port changes.
+- Upstream project: <https://github.com/openjdk/jdk25u-dev>.
+- A boot JDK suitable for building JDK 25, Cygwin, GNU Make, and the Windows
+  dependencies listed in `doc/building.md`.
+- MSVC 14.29.30133 and Windows SDK 10.0.19041.0 for the legacy native tools.
+- LLVM `llvm-readobj` for PE import/export inspection.
+- NSIS 3.12 for packaging.
+- An original XP Professional x64 `kernel32.dll` from your own installation,
+  used as an export reference. Windows DLLs are not distributed here.
 
-## Compatibility image prerequisites
+Follow the Windows-specific configure options in the upstream instructions,
+then build the x64 release image with `make images`. The normal OpenJDK image
+is an intermediate result: the post-link compatibility stage below is required.
 
-- x64 MSVC compiler and linker
-- Windows 10 SDK 10.0.19041.0, unless another version is passed explicitly
-- LLVM `llvm-readobj`
-- An original Windows XP Professional x64 `kernel32.dll`, used only to generate
-  a valid export allow-list
-- The freshly built JDK image
+## Process-local Windows compatibility
 
-Example:
+These scripts accept explicit tool and image paths:
 
 ```powershell
 .\legacy-windows\jdkxp\build-proxy.ps1 `
   -JdkImage C:\build\jdk25\images\jdk `
-  -MsvcRoot C:\BuildTools\VC\Tools\MSVC\14.xx.xxxxx `
+  -MsvcRoot C:\BuildTools\VC\Tools\MSVC\14.29.30133 `
   -WindowsSdkRoot 'C:\Program Files (x86)\Windows Kits\10' `
   -LlvmReadObj C:\LLVM\bin\llvm-readobj.exe `
   -XpKernel32 C:\reference\xp-x64\kernel32.dll `
@@ -36,69 +39,107 @@ Example:
   -InputJdkImage C:\build\jdk25\images\jdk `
   -ProxyBuildDirectory C:\build\jdk25-proxy `
   -LlvmReadObj C:\LLVM\bin\llvm-readobj.exe `
-  -OutputDirectory C:\release-images\jdk25-xp-x64 `
+  -OutputDirectory C:\build\legacy-jdk25 `
   -MapIphlpapi
 ```
 
-The proxy build generates its export definition from the actual target binaries
-and XP export surface. Packaging copies to a new destination, rejects an
-existing output directory, rewrites only the narrow import families required by
-the port, sets the NT 5.2 PE target, and emits `SHA256SUMS.txt`.
+Use `-AdditionalTargetRoot` when generating the proxy for additional native
+dependencies. It extends the required export surface; it does not install
+anything into Windows. Packaging refuses to overwrite an existing image.
 
-Optional Minecraft native directories can be supplied through
-`-AdditionalTargetRoot` when building the proxy. This expands the process-local
-forwarder surface; it does not modify Minecraft or Windows. The wrapper and
-assembly sources used for release build r14 are under `legacy-windows/minecraft`.
+## Minecraft native-library and wrapper stage
 
-Build the two release-specific native compatibility payloads before the wrapper:
+The wrapper drivers are workspace-oriented, not a self-contained dependency
+downloader. They require the prepared native dependencies, import libraries,
+and JDK build output referenced at the top of each script. The exact published
+payload is recorded in `legacy-windows/installer/minecraft26-release/PAYLOAD-SHA256SUMS.txt`.
+Do not replace native libraries with arbitrary newer binaries: their exported
+ABI and legacy OS imports matter.
+
+Use `-WorkspaceRoot` to select a build workspace. Its `work` directory contains
+the following inputs (the script headers give the full relative paths):
+
+- `sources/openjdk25u-xp`: this source tree and its `w25xp-release-final1` build;
+- `toolchains`: the compiler, SDK and LLVM tools listed above;
+- `compat/jdkxp`: the scripts from `legacy-windows/jdkxp`;
+- `compat/minecraftxp/preload`: compatible native DLLs and import libraries;
+- `minecraft`: prepared native profiles and the relevant JNA artifacts;
+- `artifacts/openjdk-25.0.4-xp-x64-certified-final`: the base legacy JDK image,
+  including the native support inputs consumed by assembly.
+
+The underlying third-party projects are [LWJGL](https://github.com/LWJGL/lwjgl3),
+[GLFW](https://github.com/glfw/glfw), [OpenAL Soft](https://github.com/kcat/openal-soft),
+[SDL](https://github.com/libsdl-org/SDL), [JNA](https://github.com/java-native-access/jna),
+and [Mesa](https://gitlab.freedesktop.org/mesa/mesa). Retain their licenses and
+notices when preparing native inputs. The release does not bundle Minecraft
+game files, Microsoft build tools, or Windows system DLLs as source dependencies.
+
+After preparing those inputs, from this repository:
 
 ```powershell
 .\legacy-windows\minecraft\build-lwjgl-memoryutil-compat.ps1 `
-  -OutputRevision r3
-
+  -WorkspaceRoot C:\build\legacy-workspace -OutputRevision r3
 .\legacy-windows\minecraft\build-sdl3-isolated-compat.ps1 `
-  -OutputRevision r1
-
+  -WorkspaceRoot C:\build\legacy-workspace -OutputRevision r1
 .\legacy-windows\minecraft\build-minecraft-wrappers.ps1 `
-  -JavaMajor 25 -OutputRevision r14 `
-  -LwjglCompatRevision r3 -SdlCompatRevision r1
-
+  -WorkspaceRoot C:\build\legacy-workspace -JavaMajor 25
 .\legacy-windows\minecraft\assemble-minecraft-wrapper-images.ps1 `
-  -JavaMajor 25 -Revision r14 -SupportRevision r14 -TargetOs xp
+  -WorkspaceRoot C:\build\legacy-workspace -JavaMajor 25
 ```
 
-The LWJGL build preserves the certified legacy export surface and adds only the
-two MemoryUtil queries observed in LWJGL 3.4.2. The SDL build gives its broader
-shell and user compatibility modules private names, preventing them from
-colliding with the JDK's own modules.
+This repository's wrapper and assembly defaults select its own OS and build
+revision. XP uses the preserved r31 minimal-options source together with the
+current Minecraft 26 path; Vista uses its own r41 compile definitions.
+See [release metadata](LEGACY_WINDOWS_RELEASE.md). Existing build output is
+preserved rather than overwritten.
 
-## Building installers
-
-Use NSIS 3.12 or newer and the release driver under
-`legacy-windows/installer/minecraft-r14`. The release selects only the XP x64
-OpenJDK 25 image. Definitions for development targets are not support claims.
+The small profile-selection test can run without launching Minecraft:
 
 ```powershell
-.\legacy-windows\installer\minecraft-r14\build-installer.ps1 `
-  -RuntimeDirectory C:\release\openjdk-25.0.4-xp-x64-minecraft-wrapper-r14 `
-  -Makensis C:\tools\nsis\makensis.exe `
-  -OutputDirectory C:\release\installer
+.\legacy-windows\minecraft\tests\test-minecraft-profile-detection.ps1 `
+  -WorkspaceRoot C:\build\legacy-workspace
 ```
 
-The driver embeds the exact source commit and payload SHA-256 manifest, treats
-NSIS warnings as errors, and emits installer `SHA256SUMS.txt`. For a different
-build farm, change only the explicit input/toolchain paths; do not change the
-payload, source commit, or target-OS checks when reproducing release build r14.
+## Installer and certificate utility
 
-The optional serialized-certificate-store importer can be built separately:
+`legacy-windows/installer/minecraft26-release` contains the NSIS script,
+upgrade-auditor source, original packaging driver, and a path-parameterized
+packaging entry point. Build the auditor, then package a completed runtime:
+
+```powershell
+.\legacy-windows\installer\minecraft26-release\build-upgrade-audit.ps1 `
+  -WorkspaceRoot C:\build\legacy-workspace -OutputDirectory C:\build\auditor
+.\legacy-windows\installer\minecraft26-release\build-installer.ps1 `
+  -RuntimeDirectory C:\build\complete-runtime `
+  -Makensis C:\tools\nsis-3.12\makensis.exe `
+  -UpgradeAuditor C:\build\auditor\legacy-openjdk-upgrade-audit.exe `
+  -OutputDirectory C:\build\installer
+```
+
+By default, packaging requires the exact published payload manifest. A developer
+packaging a deliberately changed runtime must use `-AllowDifferentPayload`;
+the resulting installer is a new build requiring its own validation.
+
+The certificate importer is built separately:
 
 ```powershell
 .\legacy-windows\tools\xp-cert-import\build.ps1 `
-  -MsvcRoot C:\toolchains\MSVC\14.29.30133 `
+  -MsvcRoot C:\BuildTools\VC\Tools\MSVC\14.29.30133 `
   -WindowsSdkRoot 'C:\Program Files (x86)\Windows Kits\10' `
-  -OutputDirectory C:\release\certificate-tool
+  -OutputDirectory C:\build\certificate-tool
 ```
 
-No certificates are part of the source or binary release. The utility accepts
-only a user-supplied SST and writes to the requested local-machine certificate
-store.
+The same NT 5.2-compatible importer implementation is used for Vista under the
+Vista-specific filename. The release ZIP supplies the OS-specific BAT/README
+and Microsoft root snapshot separately from the JDK. The README explains how
+to obtain a fresh SST directly from Microsoft instead.
+
+## Reproducibility limits
+
+The release installers are the preserved tested binaries, not newly rebuilt
+copies. Their original embedded source labels are build labels, not Git commit
+IDs; the release tag and payload manifest record the corresponding source and
+files. A rebuild may differ because of compiler versions, timestamps, path
+metadata or native inputs. Do not claim an identical binary unless its hash
+actually matches. A fresh clone does not by itself fetch and prepare every
+third-party native dependency.

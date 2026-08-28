@@ -1,0 +1,14 @@
+{
+  "targetOs": "vista",
+  "revision": "r41",
+  "releaseTag": "v1.0.0",
+  "osLabel": "Windows Vista SP2 x64",
+  "productName": "OpenJDK 25.0.4 for Windows Vista x64",
+  "sourceLabel": "local-candidate-vista-r41",
+  "installer": "OpenJDK25U-jdk_x64_windows-vista_25.0.4.exe",
+  "originalInstaller": "OpenJDK25U-jdk_x64_windows-vista_25.0.4_version2-r41.exe",
+  "installerSha256": "5DB1C22A53382AB9B1472B31B190BE8A38C99186C7424D5D0729E83E5D0DA40C",
+  "payloadManifestSha256": "2ECBACDAA3427199688BB5CE9AE38FC2F6820AAE53E67239668ED9D52545C1B8",
+  "certificateArchive": "Vista-x64-Certificates-Installer.zip",
+  "certificateArchiveSha256": "7E27BBD9B18E2EBAC39CDE69856419D534CA4C3EBA0E3D7129569FAB92E3AF47"
+}

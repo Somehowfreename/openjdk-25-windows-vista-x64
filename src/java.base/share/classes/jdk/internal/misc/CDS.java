@@ -43,6 +43,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 import jdk.internal.access.SharedSecrets;
+import jdk.internal.util.JdkExecutablePath;
 import jdk.internal.util.StaticProperty;
 
 public class CDS {
@@ -311,7 +312,7 @@ public class CDS {
             String jdkHome = StaticProperty.javaHome();
             String classPath = System.getProperty("java.class.path");
             List<String> cmds = new ArrayList<String>();
-            cmds.add(jdkHome + File.separator + "bin" + File.separator + "java"); // java
+            cmds.add(JdkExecutablePath.resolve(jdkHome, "java"));
             cmds.add("-cp");
             cmds.add(classPath);
             cmds.add("-Xlog:cds");

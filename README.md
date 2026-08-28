@@ -1,223 +1,167 @@
-# OpenJDK 25 for Windows XP Professional x64
+# OpenJDK 25 for Windows Vista x64
 
-This project brings OpenJDK 25.0.4 to Windows XP Professional x64 Edition SP2
-and provides application-local launchers for official Minecraft Java Edition
-26 Vanilla.
+OpenJDK 25.0.4 for Windows Vista SP2 x64, with automatic Minecraft 26
+compatibility. This is the separate Vista package; use its Vista installer
+and launcher executables, not the XP package. No One-Core-API or system-wide
+extended kernel is required.
 
 ## Supported configuration
 
-Release 1.0.0 supports:
+- Windows Vista SP2 x64 with the correct chipset, network, audio and graphics drivers.
+- Minecraft 26.1 through 26.2: vanilla, Fabric and NeoForge.
+- Single-player, local/LAN servers, and online servers for those main releases.
+- MultiMC and the launcher-specific OLauncher entry point.
+- Minecraft 26.3 Snapshot 10: working vanilla single-player.
 
-- Windows XP Professional x64 Edition SP2 (64-bit only);
-- this project's OpenJDK 25.0.4 x64 installer;
-- official MultiMC 0.7.0-4274;
-- official, authenticated, non-demo Minecraft Java Edition 26.1, 26.1.1,
-  26.1.2, and 26.2 Vanilla;
-- Minecraft 26.3 Snapshot 9 Vanilla for playable single-player worlds.
+**Fabric and NeoForge support is included for Minecraft 26.1–26.2.
+Individual mods have not been tested.** A working loader does not guarantee
+that every mod or native dependency supports Vista.
 
-All main releases from 26.1 through 26.2 completed Microsoft account sign-in,
-download, audio, authenticated multiplayer, single-player world creation and
-reload, rendering and input, saving, and normal exit. Minecraft 26.3 Snapshot 9
-completed launch, audio, playable single-player world generation, save/reload,
-and normal exit; multiplayer for that snapshot has not been tested. The exact
-matrix is in
-[LEGACY_WINDOWS_TEST_MATRIX.md](LEGACY_WINDOWS_TEST_MATRIX.md).
+**Minecraft 26.3 mod loaders are not supported yet.** Snapshot 10 works in
+single-player. Multiplayer is expected to work, but has not been verified:
+no compatible public server was available for testing. Please report results
+or problems through [GitHub Issues](https://github.com/Somehowfreename/openjdk-25-windows-vista-x64/issues).
 
-The Minecraft launcher automatically selects XP's native DirectSound backend
-with the bare-metal-tested OpenAL output format and buffering. This prevents
-the crackling produced by OpenAL Soft's default XP configuration on affected
-hardware. Users do not need to create an `alsoft.ini` file or change MultiMC.
-
-Fabric, NeoForge, Forge, individual mods, Windows Vista, 32-bit Windows, and
-Minecraft versions not listed in the test matrix are not supported by this
-release.
+See the [configuration matrix](LEGACY_WINDOWS_TEST_MATRIX.md) for the specific
+loader versions. This release covers only the listed Minecraft 26 configurations.
 
 ## Before installing
 
-1. Install Windows XP Professional x64 Edition SP2 and the correct chipset,
-   network, audio, and 64-bit graphics drivers for the computer.
-2. Set the correct date, time, and time zone. TLS sign-in can fail when the
-   clock is wrong.
-3. Download `XP-x64-Certificates-Installer.zip` from this project's
-   [GitHub Releases page](https://github.com/Somehowfreename/openjdk-25-windows-xp-x64/releases/latest).
-   Extract it completely, open the enclosed `XP-x64-Certificates-Installer`
-   folder, and double-click `Install Certificates.bat` while logged on as an
-   administrator. Keep the BAT, `import-sst-xp-x64.exe`, and `WURoots.sst`
-   together. Wait for **SUCCESS**, then restart XP.
-4. Back up important files before using an unsupported operating system online.
+1. Install Windows Vista SP2 **64-bit**, with the correct hardware drivers.
+   A graphics driver providing the required OpenGL support is necessary.
+2. Set the correct date, time and time zone before attempting HTTPS downloads
+   or Microsoft account sign-in.
+3. Download `Vista-x64-Certificates-Installer.zip` from
+   [Releases](https://github.com/Somehowfreename/openjdk-25-windows-vista-x64/releases/latest).
+   Extract the ZIP completely and open the enclosed
+   `Vista-x64-Certificates-Installer` folder. Right-click
+   `Install Certificates.bat` and choose **Run as administrator**. Accept
+   Vista's UAC prompt. Keep the BAT, `import-sst-vista-x64.exe`, and
+   `WURoots.sst` in the same folder. Wait for **SUCCESS**, then restart Vista.
+4. Run the Vista OpenJDK installer from the same release as an administrator.
 
-Legacy Update is **not required** to run this OpenJDK or the supported
-Minecraft versions. Bare-metal validation began with a fresh installation from
-unmodified official Windows XP Professional x64 Edition SP2 media, with no
-post-SP2 updates installed through Legacy Update or any other update service.
-After the correct hardware drivers and current trusted-root certificates were
-installed, the tested configurations worked. The final clean-room check
-restored an image captured immediately after the XP installation—before any
-drivers or launcher had been installed—then used only newly installed hardware
-drivers and files downloaded from this GitHub release. Minecraft launched with
-clean audio and required no residual test files or manual compatibility fixes.
+The installation does not require a Legacy Update session or an extended
+kernel. Keeping applicable Microsoft updates installed is still recommended
+for general security; Vista remains an unsupported operating system.
 
-Installing all applicable Microsoft-issued updates through the current
-[Legacy Update](https://legacyupdate.net/) release is still recommended for
-general operating-system security, but users do not need to wait for that
-process before testing this project.
+The default installation folder is:
 
-### Manual certificate installation
+`C:\Program Files\Legacy OpenJDK\jdk-25.0.4-vista-x64`
 
-Users do not have to trust the `WURoots.sst` supplied in the certificate ZIP
-or run its automated BAT file. To download a fresh trusted-root store directly
-from Microsoft and import it manually:
+The installer does not replace Windows system DLLs or change global `PATH`
+or `JAVA_HOME`. Close games and launchers before upgrading, and back up any
+files you have added to or modified in the JDK directory before accepting
+an installer replacement warning.
 
-1. On a currently supported, Internet-connected Windows computer, open Command
-   Prompt as administrator and run:
+## Configure MultiMC
+
+1. Download the official Windows archive from [multimc.org](https://multimc.org/#Download).
+2. Extract it completely to a normal local folder, for example `C:\Games\MultiMC`.
+   Do not run the launcher inside a ZIP or from a network/shared folder.
+3. Run `MultiMC.exe` normally. Add your account using **Manage Accounts > Add Microsoft**.
+   You can complete the device-code web page on a modern computer or phone.
+4. In **Settings > Java**, select:
+
+   `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-vista-x64\bin\minecraft-javaw-multimc.exe`
+
+   MultiMC's **first-launch** Java picker may hide this executable. Enter the
+   full path manually in that initial dialog, or cancel it and use
+   **Settings > Java > Browse** once the main window opens. The normal
+   settings picker shows the executable.
+5. Click **Add Instance** and choose the supported Minecraft 26 version.
+6. Check that any per-instance Java override uses the same executable.
+7. Set maximum memory to `4096 MiB` if the computer has enough RAM. No extra
+   compatibility JVM flags need to be entered.
+8. Launch normally.
+
+The legacy filename `bin\minecraft-javaw.exe` is a physical, byte-identical
+copy of the named MultiMC executable. New configurations should use
+`minecraft-javaw-multimc.exe` to make the launcher choice clear.
+
+### Fabric or NeoForge
+
+For Minecraft 26.1–26.2, use **Edit Instance > Version** to install either
+Fabric or NeoForge for the exact game version. Use one loader per instance.
+The same Java executable handles vanilla and these loaders. Refer to the
+[configuration matrix](LEGACY_WINDOWS_TEST_MATRIX.md) for tested versions.
+
+No individual mods have been tested. A mod may require native libraries or
+Windows APIs unavailable on Vista even when its loader works.
+
+## OLauncher
+
+Use [OLauncher](https://github.com/olauncher/olauncher) from its official
+project and sign in using its normal Microsoft-account flow. In the profile's
+Java settings, select:
+
+`C:\Program Files\Legacy OpenJDK\jdk-25.0.4-vista-x64\bin\minecraft-javaw-olauncher.exe`
+
+Do not substitute the MultiMC executable for OLauncher. Loader profiles must
+be installed for the matching game version using the loader's supported
+installation procedure; this JDK does not add a loader installer to OLauncher's UI.
+
+If downloads stall, use an OLauncher build containing its resumable-download
+and completed-file validation fix. Launcher download behavior is separate
+from the JDK's game compatibility.
+
+## Compatibility and graphics
+
+The launcher-specific executable selects the compatible native libraries
+automatically. Do not replace downloaded launcher JARs or DLLs manually.
+Compatibility behavior is application-local. Native operating-system exports
+are used where available, with fallbacks for missing functions. The Vista
+wrapper also includes application-level behavior specific to Vista; it is
+not simply the XP installer renamed.
+
+Use the normal launcher executables on physical hardware. The software-rendering
+executables under `bin\vmtests` are for environments lacking suitable hardware
+OpenGL support and are substantially slower.
+
+## Install certificates manually
+
+You do not have to run the certificate installer or trust its supplied SST.
+
+1. On a supported, Internet-connected Windows computer, open an administrator
+   Command Prompt in an empty folder and run:
 
    ```cmd
-   mkdir C:\XP-x64-roots
-   cd /d C:\XP-x64-roots
    certutil -generateSSTFromWU WURoots.sst
    certutil -hashfile WURoots.sst SHA256
    ```
 
-   Microsoft documents `-generateSSTFromWU` in its
-   [certutil reference](https://learn.microsoft.com/windows-server/administration/windows-commands/certutil).
-2. Download and completely extract `XP-x64-Certificates-Installer.zip`. Replace
-   its supplied `WURoots.sst` with the file generated in step 1. Keep that file
-   beside `import-sst-xp-x64.exe`.
-3. Review the importer's complete source under
-   `legacy-windows/tools/xp-cert-import`, or build it yourself using the
-   included instructions. Verify the extracted files against the ZIP's
-   `SHA256SUMS.txt`.
-4. Copy the extracted folder to a local drive on XP, log on as an administrator,
-   open Command Prompt in that folder, and run:
+2. To use the automated importer with your own Microsoft-generated roots,
+   replace the ZIP's `WURoots.sst` with that file. Keep it beside the BAT and
+   importer and run **Install Certificates.bat > Run as administrator** on Vista.
+3. To use **no executable from this project**, open the SST on the supported
+   computer, review its roots, and export the required certificates as
+   DER-encoded `.cer` files. Transfer those files to Vista.
+4. On Vista, run `mmc` as administrator and approve UAC. Add **Certificates**
+   for **Computer account > Local computer**, then open
+   **Trusted Root Certification Authorities > Certificates**. Use
+   **Action > All Tasks > Import** to import the reviewed certificates.
+5. Restart Vista when finished.
 
-   ```cmd
-   import-sst-xp-x64.exe WURoots.sst ROOT
-   ```
+Microsoft documents [certutil and SST generation](https://learn.microsoft.com/windows-server/administration/windows-commands/certutil)
+and [the computer trusted-root store](https://learn.microsoft.com/windows-hardware/drivers/install/trusted-root-certification-authorities-certificate-store).
+Root imports change trust for the whole computer. Do not use untrusted mirrors.
+The certificate ZIP contains the same instructions and the importer source is
+included in this repository.
 
-5. Confirm the importer reports success, then restart XP.
+## Troubleshooting, source and licensing
 
-For a route that uses no executable from this project, open the
-Microsoft-generated `WURoots.sst` on the supported Windows computer, inspect
-and export the required roots as individual DER-encoded `.cer` files, then
-transfer them to XP. On XP, run `mmc`, add the **Certificates** snap-in for the
-**Computer account** and **Local computer**, open **Trusted Root Certification
-Authorities > Certificates**, and use **Action > All Tasks > Import** for each
-reviewed certificate. Microsoft documents the certificate store and MMC route
-in its
-[Trusted Root Certification Authorities guide](https://learn.microsoft.com/windows-hardware/drivers/install/trusted-root-certification-authorities-certificate-store).
-
-Adding a root changes certificate trust for the whole computer. Never install
-root bundles obtained from unofficial mirrors.
-
-## Install OpenJDK 25
-
-Download the installer from the
-[GitHub Releases page](https://github.com/Somehowfreename/openjdk-25-windows-xp-x64/releases/latest)
-and verify its SHA-256 against [LEGACY_WINDOWS_RELEASE.md](LEGACY_WINDOWS_RELEASE.md).
-Run the installer as an administrator. It installs to:
-
-`C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64`
-
-The installer does not replace Windows DLLs and does not alter global `PATH` or
-`JAVA_HOME`.
-
-## Install and configure MultiMC
-
-1. Download the official Windows archive from
-   [multimc.org](https://multimc.org/#Download).
-2. Extract the entire archive to a normal local folder such as
-   `C:\Games\MultiMC`. Do not run it from inside the ZIP or from any shared or
-   network folder.
-3. Run `MultiMC.exe`. During MultiMC's first-launch setup, its Java file picker
-   may hide executables whose names are not the standard `java.exe` or
-   `javaw.exe`. If `minecraft-javaw.exe` is not shown there, type or paste this
-   complete path directly into the Java-path field:
-
-   `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw.exe`
-
-   Manual path entry is required only for that first-launch picker. After the
-   main launcher opens, **Settings > Java > Browse** displays
-   `minecraft-javaw.exe` and it can be selected normally.
-4. Click the face/profile button in the upper-right, choose **Manage Accounts**,
-   then **Add Microsoft**. Follow MultiMC's device-code instructions. The web
-   page may be opened on a modern PC or phone.
-5. Click **Add Instance**, select the desired supported Minecraft 26 Vanilla
-   release, and create the instance.
-6. Right-click the instance, choose **Edit Instance**, open **Settings**, and
-   enable the Java-installation override. Select `minecraft-javaw.exe` using
-   the normal Java picker, or confirm that the Java path is exactly:
-
-   `C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw.exe`
-
-7. Set maximum memory to `4096 MiB` if the computer has enough physical RAM.
-8. Leave the Java-arguments box unchanged. No compatibility flags are required.
-9. Double-click the instance and play.
-
-The native-GPU launcher above is the recommended path for real hardware. If the
-installed XP graphics driver cannot provide the required OpenGL behavior, use
-this slower CPU-rendered fallback instead by selecting it in the normal Java
-picker or entering its complete path in the same box:
-
-`C:\Program Files\Legacy OpenJDK\jdk-25.0.4-xp-x64\bin\minecraft-javaw-software.exe`
-
-Do not replace files inside MultiMC's `libraries` directory or Minecraft JARs.
-The included launchers route the compatible LWJGL, OpenAL, GLFW, FreeType, and
-SDL components automatically for supported Minecraft 26 instances. They also
-apply the verified XP DirectSound configuration only inside the Minecraft Java
-process. Recovery and manual verification steps are in
-[MINECRAFT_RELEASE.md](MINECRAFT_RELEASE.md#manual-repair-and-verification).
-
-## Privacy and game ownership
-
-Minecraft, launcher branding, Mojang assets, account credentials, and tokens
-are not bundled. Users must own Minecraft and sign in through MultiMC's normal
-Microsoft device-code flow. The JDK installer never reads or stores MultiMC
-account data. Never publish `accounts.json`; its tokens can grant account
-access.
-
-## What the port changes
-
-The port uses application-local compatibility DLLs and NT 5.2-compatible PE
-targets. It does not replace Windows system DLLs or patch the operating system.
-Native operating-system APIs are used when available; compatibility
-implementations are selected only when XP lacks the required export or
-behavior.
-
-Technical documentation:
-
-- [Minecraft release and troubleshooting guide](MINECRAFT_RELEASE.md)
-- [Validation matrix](LEGACY_WINDOWS_TEST_MATRIX.md)
+- [Troubleshooting and manual verification](MINECRAFT_RELEASE.md)
+- [Supported configurations](LEGACY_WINDOWS_TEST_MATRIX.md)
+- [Build instructions](LEGACY_WINDOWS_BUILD.md)
+- [Release files and hashes](LEGACY_WINDOWS_RELEASE.md)
 - [Port architecture](LEGACY_WINDOWS_PORT.md)
-- [Build and reproduction notes](LEGACY_WINDOWS_BUILD.md)
-- [Release provenance and hashes](LEGACY_WINDOWS_RELEASE.md)
-- [Support policy](SUPPORT.md)
-- [Security policy](SECURITY.md)
+- [Changelog](CHANGELOG.md), [support](SUPPORT.md), and [security](SECURITY.md)
 
-## Building from source
+Minecraft game files, account credentials and access tokens are not bundled.
+Own the game and sign in through your launcher. Never put account files or
+access tokens in a bug report.
 
-The complete corresponding OpenJDK and XP compatibility source is included in
-this repository. Start with
-[LEGACY_WINDOWS_BUILD.md](LEGACY_WINDOWS_BUILD.md), which records the upstream
-baseline, compiler and SDK requirements, XP export reference, compatibility
-image construction, Minecraft native-wrapper builds, final runtime assembly,
-NSIS installer reproduction, and certificate-helper build. The normal OpenJDK
-build system is documented in [doc/building.md](doc/building.md).
-
-Release reproduction intentionally uses explicit input and toolchain paths and
-refuses to overwrite preserved build outputs. A reproduced binary is expected
-to be built from a clean checkout so its installer can embed the exact source
-commit and a complete per-file payload manifest.
-
-## Licensing and attribution
-
-This repository is derived from the official
-[OpenJDK 25 Updates development repository](https://github.com/openjdk/jdk25u-dev)
-at the documented OpenJDK 25.0.4 baseline. Source is provided under OpenJDK's
-GPLv2 with Classpath Exception terms; see [LICENSE](LICENSE),
-[ADDITIONAL_LICENSE_INFO](ADDITIONAL_LICENSE_INFO), and
-[ASSEMBLY_EXCEPTION](ASSEMBLY_EXCEPTION).
-
-This is an independent community port. It is not an Oracle, OpenJDK, Eclipse
-Foundation, Adoptium, MultiMC, Microsoft, Mojang, or Minecraft support
-offering. Microsoft no longer supports Windows XP. Use obsolete operating
-systems only with an appropriate security posture.
+This is an independent community port of [OpenJDK](https://github.com/openjdk/jdk25u-dev),
+not an official Oracle, Adoptium, Microsoft, Mojang, MultiMC or OLauncher
+product. See [LICENSE](LICENSE), [ADDITIONAL_LICENSE_INFO](ADDITIONAL_LICENSE_INFO),
+and [ASSEMBLY_EXCEPTION](ASSEMBLY_EXCEPTION). Third-party components retain
+their own licenses.

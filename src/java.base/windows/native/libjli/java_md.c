@@ -412,14 +412,40 @@ LoadJavaVM(const char *jvmpath, InvocationFunctions *ifn)
 }
 
 /*
- * Removes the trailing file name and one sub-folder from a path.
- * If buf is "c:\foo\bin\javac", then put "c:\foo" into buf.
+ * Private executable layout used by the legacy Windows release image. The
+ * normal bin layout remains supported so this source tree can still produce
+ * and run conventional development images.
+ */
+#define LEGACY_PRIVATE_EXECUTABLE_DIRECTORY \
+    "\\lib\\legacy-windows\\internal\\launcher\\executables"
+
+/*
+ * Removes the trailing file name and executable directory from a path.
+ * If buf is "c:\foo\bin\javac", or an executable in the private legacy
+ * Windows directory above, then put "c:\foo" into buf.
  */
 jboolean
 TruncatePath(char *buf)
 {
     char *cp;
-    *JLI_StrRChr(buf, '\\') = '\0'; /* remove .exe file name */
+    char *file_separator = JLI_StrRChr(buf, '\\');
+    size_t directory_length;
+    size_t private_length = strlen(LEGACY_PRIVATE_EXECUTABLE_DIRECTORY);
+
+    if (file_separator == NULL) {
+        buf[0] = '\0';
+        return JNI_FALSE;
+    }
+    *file_separator = '\0'; /* remove executable or DLL file name */
+
+    directory_length = strlen(buf);
+    if (directory_length >= private_length &&
+        _stricmp(buf + directory_length - private_length,
+                 LEGACY_PRIVATE_EXECUTABLE_DIRECTORY) == 0) {
+        buf[directory_length - private_length] = '\0';
+        return buf[0] != '\0' ? JNI_TRUE : JNI_FALSE;
+    }
+
     if ((cp = JLI_StrRChr(buf, '\\')) == 0) {
         /* This happens if the application is in a drive root, and
          * there is no bin directory. */
